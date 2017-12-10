@@ -21,15 +21,17 @@ def norm_voltage(data):
 
 def parse_emg(emt_file):
     header = ''
-    for line in emt_file:
-        sline = line.strip()
-        if sline.startswith('Frame') and 'Time' in sline:
-            columns = sline.split()
-            break
-        else:
-            header += line
-            continue
-
+    try:
+        for line in emt_file:
+            sline = line.strip()
+            if sline.startswith('Frame') and 'Time' in sline:
+                columns = sline.split()
+                break
+            else:
+                header += line
+                continue
+    except Exception as err:
+        raise RuntimeError('ERROR during parsing of {}: {}'.format(emt_file.name, str(err)))
     data = pd.read_table(emt_file, sep='\t',
                          names=columns,
                          header=None,
