@@ -13,11 +13,9 @@ import pandas as pd
 def norm_voltage(data):
     voltage = data.iloc[:, 1]
     vmin = voltage.min()
-    vmax = voltage.max()
-    #print('MIN=', vmin, "MAX=", vmax)
     voltage -= vmin
+    vmax = voltage.max()
     voltage /= vmax
-    #new_data = pd.concat([data[['Time']], voltage], axis=1)
     return data
 
 
