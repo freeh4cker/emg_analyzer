@@ -12,28 +12,34 @@ import os
 from emg_analyser import emg
 
 
-def norm_one_emg_file(emg_path, out=None):
+def norm_one_emg_file(emg_path, dest=''):
     with open(emg_path) as emg_file:
         header, data = emg.parse_emg(emg_file)
     data = emg.norm_voltage(data)
     header = header.replace('Measure unit: 	V', 'Measure unit: 	V normalized')
-    if out is not None:
-        normed_path, ext = os.path.splitext(emg_path)
-        normed_path = normed_path.replace(' ', '_')
-        normed_path = "{}_norm{}".format(normed_path, ext)
-    else:
-        normed_path = out
+    root_dir, basename = os.split(emg_path)
+    normed_filename, ext = os.path.splitext(basename)
+    normed_filename = normed_filename.replace(' ', '_')
+    normed_filename = "{}_norm{}".format(normed_filename, ext)
+    normed_path = os.path.join(dest, normed_filename)
     with open(normed_path, 'w') as normed_file:
         emg.to_file(normed_file, header, data)
 
 
-def norm_one_dir(path):
+def norm_one_dir(path, dest=''):
+    root_dir, basename = os.path.split(path)
+    norm_dir = "{}_norm".format(basename.replace(' ', '_'))
+    if dest:
+        norm_path = os.path.join(dest, norm_dir)
+    else:
+        norm_path = os.path.join(root_dir, norm_dir)
+    os.mkdir(norm_path)
     with os.scandir(path) as dir_it:
         for entry in dir_it:
             if not entry.name.startswith('.') and entry.is_file():
-                print(entry.path)
+                norm_one_emg_file(entry.path, dest=norm_path)
             elif entry.is_dir():
-                norm_one_dir(entry.path)
+                norm_one_dir(entry.path, dest=norm_path)
 
 
 def main():
