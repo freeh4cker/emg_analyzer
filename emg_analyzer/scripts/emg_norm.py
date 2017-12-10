@@ -36,7 +36,7 @@ def norm_one_dir(path, dest=''):
     os.mkdir(norm_path)
     with os.scandir(path) as dir_it:
         for entry in dir_it:
-            if not entry.name.startswith('.') and entry.is_file():
+            if not entry.name.startswith('.') and entry.is_file() and entry.name.endswith('.emt'):
                 norm_one_emg_file(entry.path, dest=norm_path)
             elif entry.is_dir():
                 norm_one_dir(entry.path, dest=norm_path)
