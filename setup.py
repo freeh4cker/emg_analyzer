@@ -1,10 +1,9 @@
 from setuptools import setup, find_packages
-import emg_analyser
 
 with open('README.md') as f:
     readme = f.read()
 
-version = emg_analyser.__version__
+version = '0.1b'
 setup(
     name='emg_analyzer',
     version=version,
