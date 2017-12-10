@@ -9,7 +9,7 @@
 
 import argparse
 import os
-from emg_analyser import emg
+from emg_analyzer import emg
 
 
 def norm_one_emg_file(emg_path, dest=''):
