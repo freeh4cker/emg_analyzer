@@ -48,10 +48,11 @@ def main():
                         nargs='+',
                         help="The path to '.emt' file or a directory containing '.emt' files")
     args = parser.parse_args()
-    if os.path.isdir(args.emg_path):
-        norm_one_dir(args.emg_path)
-    else:
-        norm_one_emg_file(args.emg_path)
+    for path in args.emg_path:
+        if os.path.isdir(path):
+            norm_one_dir(path)
+        else:
+            norm_one_emg_file(path)
 
 
 if __name__ == '__main__':
