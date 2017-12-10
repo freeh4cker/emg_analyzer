@@ -25,7 +25,7 @@ def parse_emg(emt_file):
         for line in emt_file:
             sline = line.strip()
             if sline.startswith('Frame') and 'Time' in sline:
-                columns = sline.split()
+                columns = sline.split('\t')
                 break
             else:
                 header += line
