@@ -35,7 +35,7 @@ def parse_emg(emt_file):
                          header=None,
                          skip_blank_lines=True,
                          index_col=0,
-                         usecols=[0,1,2])
+                         usecols=[0, 1, 2])
     return header, data
 
 
