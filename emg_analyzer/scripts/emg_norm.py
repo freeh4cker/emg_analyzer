@@ -16,7 +16,6 @@ def norm_one_emg_file(emg_path, dest=''):
     with open(emg_path) as emg_file:
         header, data = emg.parse_emg(emg_file)
     data = emg.norm_voltage(data)
-    header = header.replace('Measure unit: 	V', 'Measure unit: 	V normalized')
     root_dir, basename = os.path.split(emg_path)
     normed_filename, ext = os.path.splitext(basename)
     normed_filename = normed_filename.replace(' ', '_')
