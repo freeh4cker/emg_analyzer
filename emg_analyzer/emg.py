@@ -7,96 +7,136 @@
 # found in the LICENSE file.                                             #
 ##########################################################################
 
+from io import StringIO
 import pandas as pd
 
 
-def norm_voltage(data):
-    voltage = data.iloc[:, 1]
-    vmin = voltage.min()
-    voltage -= vmin
-    vmax = voltage.max()
-    voltage /= vmax
-    return data
+class Emg:
+
+    def __init__(self):
+        self.header = None
+        self.data = None
 
 
-def parse_emg(emt_file):
-#     _header = """BTS ASCII format
-#
-# Type:         \tEmg tracks
-# Measure unit: \tV
-#
-# Tracks:       \t1
-# Frequency:    \t1000 Hz
-# Frames:       \t33780
-# Start time:   \t0.000
-#
-#  Frame\t  Time\tVoltage:LDA~2\t
-# """
+    def parse(self, emt_file):
+        self.header = EmgHeader()
+        self.header.parse(emt_file)
+        self.data = EmgData()
+        self.data.parse(emt_file, self.header.muscles)
 
-    header_template = """BTS ASCII format
+
+    def norm(self):
+        self.data.norm_voltage(self.header.muscles)
+        self.header.unit = "{} Normalized".format(self.header.unit)
+
+
+    def to_emt(self, emt_file=None):
+        buffer = emt_file if emt_file is not None else StringIO()
+        self.header.to_tsv(file=buffer)
+        self.data.to_tsv(file=buffer)
+        if emt_file is None:
+            buffer = buffer.getvalue()
+        return buffer
+
+
+    def to_graph(self):
+        pass
+
+
+class EmgHeader:
+
+    _template = """BTS ASCII format
 
 Type:         \t{type}
-Measure unit: \tV
+Measure unit: \t{unit}
 
 Tracks:       \t{tracks}
 Frequency:    \t{freq}
 Frames:       \t{frames}
-Start time:   \t{time}
+Start time:   \t{start_time:.3f}
 
- Frame\t  Time\t{voltage}\t
+ Frame\t  Time\t{muscles}\t
 """
 
 
-    def parse_header(emt_file):
-        vars = {}
+    def __init__(self):
+        self.type = None
+        self.unit = None
+        self.tracks = None
+        self.freq = None
+        self.frames = None
+        self.start_time = None
+        self.muscles = None
+
+
+    def parse(self, emt_file):
         for line in emt_file:
             if line.startswith('BTS'):
                 pass
             elif line.startswith('Type:'):
-                vars['type'] = line.split('\t')[1].strip()
-            elif line.startswith('Measure:'):
-                vars['measure'] = line.split('\t')[1].strip()
+                self.type = line.split('\t')[1].strip()
+            elif line.startswith('Measure unit:'):
+                self.unit = line.split('\t')[1].strip()
             elif line.startswith('Tracks:'):
-                vars['tracks'] = line.split('\t')[1].strip()
+                self.tracks = int(line.split('\t')[1].strip())
             elif line.startswith('Frequency:'):
-                vars['freq'] = line.split('\t')[1].strip()
+                self.freq = line.split('\t')[1].strip()
             elif line.startswith('Frames:'):
-                vars['frames'] = line.split('\t')[1].strip()
+                self.frames = int(line.split('\t')[1].strip())
             elif line.startswith('Start time:'):
-                vars['time'] = line.split('\t')[1].strip()
+                self.start_time = float(line.split('\t')[1].strip())
             elif line.startswith(' Frame\t'):
                 columns = line.split('\t')
-                vars['voltage'] = columns[-2]
+                columns = columns[2:-1]
+                self.muscles = [c.replace('Voltage:', '') for c in columns]
                 break
             else:
                 continue
-        header = header_template.format(**vars)
-        return header, columns
-
-    def parse_data(emt_file, columns):
-        data = pd.read_table(emt_file, sep='\t',
-                             names=columns,
-                             header=None,
-                             skip_blank_lines=True,
-                             index_col=0,
-                             usecols=[0, 1, 2])
-        return data
-
-    try:
-        header, columns = parse_header(emt_file)
-        data = parse_data(emt_file, columns)
-    except Exception as err:
-        raise RuntimeError('ERROR during parsing of {}: {}'.format(emt_file.name, str(err)))
-
-    return header, data
+        assert all([v is not None for v in self.__dict__.values()])
 
 
-def to_file(emt_file, header, data):
-    emt_file.write(header)
-    data.to_csv(path_or_buf=emt_file,
-                header=False,
-                sep='\t',
-                float_format='%.3f')
+    def to_tsv(self, file=None):
+        buffer = file if file is not None else StringIO()
+        fields = {k: v for k, v in self.__dict__.items()}
+        fields['muscles'] = '\t'.join(['Voltage:{}'.format(m) for m in self.muscles])
+        buffer.write(self._template.format(**fields))
+        if file is None:
+            buffer = buffer.getvalue()
+        return buffer
 
 
+class EmgData:
 
+    def __init__(self):
+        self.data = None
+
+    def parse(self, emt_file, columns):
+        columns = ['Frame', 'Time'] + columns
+        self.data = pd.read_table(emt_file,
+                                  sep='\t',
+                                  names=columns,
+                                  header=None,
+                                  skip_blank_lines=True,
+                                  index_col=0,
+                                  usecols=list(range(len(columns)))
+                                  )
+
+
+    def norm_voltage(self, muscles):
+        for col in muscles:
+            voltage = self.data[col]
+            v_min = voltage.min()
+            voltage -= v_min  # do it in place on data frame
+            v_max = voltage.max()
+            voltage /= v_max
+
+
+    def to_tsv(self, file=None, header=False):
+        buffer = file if file is not None else StringIO()
+        self.data.to_csv(path_or_buf=buffer,
+                         header=header,
+                         sep='\t',
+                         float_format='%.3f')
+        if file is None:
+            buffer = buffer.getvalue()
+        return buffer
