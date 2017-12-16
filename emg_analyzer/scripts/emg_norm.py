@@ -9,20 +9,35 @@
 
 import argparse
 import os
+import argparse_utils
 from emg_analyzer import emg
 
 
+def get_version_message():
+    import emg_analyzer
+    import pandas
+    version_text = """emg_norm: {}
+
+Using: 
+    - pandas: {}""".format(emg_analyzer.__version__,
+                           pandas.__version__)
+    return version_text
+
+
 def norm_one_emg_file(emg_path, dest=''):
+    my_emg = emg.Emg()
     with open(emg_path) as emg_file:
-        header, data = emg.parse_emg(emg_file)
-    data = emg.norm_voltage(data)
+        my_emg.parse(emg_file)
+    my_emg.norm()
+
     root_dir, basename = os.path.split(emg_path)
     normed_filename, ext = os.path.splitext(basename)
     normed_filename = normed_filename.replace(' ', '_')
     normed_filename = "{}_norm{}".format(normed_filename, ext)
     normed_path = os.path.join(dest, normed_filename)
+
     with open(normed_path, 'w') as normed_file:
-        emg.to_file(normed_file, header, data)
+        my_emg.to_emt(emt_file=normed_file)
 
 
 def norm_one_dir(path, dest=''):
@@ -45,7 +60,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('emg_path',
                         nargs='+',
-                        help="The path to '.emt' file or a directory containing '.emt' files")
+                        help="The path to '.emt' file or a directory containing '.emt' files.")
+    parser.add_argument('--version',
+                        action=argparse_utils.VersionAction,
+                        version=get_version_message(),
+                        help='Display version and exit.')
+
     args = parser.parse_args()
     for path in args.emg_path:
         if os.path.isdir(path):
