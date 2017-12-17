@@ -12,13 +12,26 @@ import pandas as pd
 
 
 class Emg:
+    """
+    Class to handle **E**\ lectro **M**\ yo **G**\ ram.
+    From *.emt* files.
+    """
 
     def __init__(self):
+        """
+        Initialization of Emg object.
+        """
         self.header = None
         self.data = None
 
 
     def parse(self, emt_file):
+        """
+        Parse emt_file to fill this object.
+
+        :param emt_file: the file to parse
+        :type emt_file: file object
+        """
         self.header = EmgHeader()
         self.header.parse(emt_file)
         self.data = EmgData()
@@ -26,11 +39,29 @@ class Emg:
 
 
     def norm(self):
+        """
+        Normalize each Voltage records.
+        Each record is normalize independently following the formula below
+        .. math::
+
+            zi = xi - min(x) / max(x) - min(x)
+
+        where x=(x1,...,xn) and zi is now your with normalized data.
+        """
         self.data.norm_voltage(self.header.muscles)
         self.header.unit = "{} Normalized".format(self.header.unit)
 
 
     def to_emt(self, emt_file=None):
+        """
+        Write the emg in .emt file format
+
+        :param emt_file: Optional buffer to write to.
+                        If None is provided the result is returned as a string.
+        :type emt_file: StringIO-like or file-like object.
+        :returns: The emg formatted to *'.emt'* format
+        :rtype: file-like object or string
+        """
         buffer = emt_file if emt_file is not None else StringIO()
         self.header.to_tsv(file=buffer)
         self.data.to_tsv(file=buffer)
@@ -44,6 +75,9 @@ class Emg:
 
 
 class EmgHeader:
+    """
+    Class to handle the header of an *.emt* file
+    """
 
     _template = """BTS ASCII format
 
@@ -58,8 +92,10 @@ Start time:   \t{start_time:.3f}
  Frame\t  Time\t{muscles}\t
 """
 
-
     def __init__(self):
+        """
+        Initialization of EmgHeader object
+        """
         self.type = None
         self.unit = None
         self.tracks = None
@@ -70,6 +106,12 @@ Start time:   \t{start_time:.3f}
 
 
     def parse(self, emt_file):
+        """
+        Parse emt_file to fill this object
+
+        :param emt_file: the file to parse
+        :type emt_file: file object
+        """
         for line in emt_file:
             if line.startswith('BTS'):
                 pass
@@ -96,6 +138,15 @@ Start time:   \t{start_time:.3f}
 
 
     def to_tsv(self, file=None):
+        """
+        Write this header in tsv according the *.emt* file format
+
+        :param file: Optional buffer to write to.
+                    If None is provided the result is returned as a string.
+        :type file: StringIO-like or file-like object.
+        :returns: The header formatted into *'.emt'* format
+        :rtype: file-like object or string
+        """
         buffer = file if file is not None else StringIO()
         fields = {k: v for k, v in self.__dict__.items()}
         fields['muscles'] = '\t'.join(['Voltage:{}'.format(m) for m in self.muscles])
@@ -106,11 +157,26 @@ Start time:   \t{start_time:.3f}
 
 
 class EmgData:
+    """
+    Class to handle the data of an *.emt* file
+    """
 
     def __init__(self):
+        """
+        Initialization of EmgData object.
+        """
         self.data = None
 
+
     def parse(self, emt_file, columns):
+        """
+        Parse emt_file to fill this object.
+
+        :param emt_file: the file to parse
+        :type emt_file: file object
+        :param columns: The list of the muscles to parse.
+        :type columns: List of string
+        """
         columns = ['Frame', 'Time'] + columns
         self.data = pd.read_table(emt_file,
                                   sep='\t',
@@ -121,8 +187,28 @@ class EmgData:
                                   usecols=list(range(len(columns)))
                                   )
 
+    @property
+    def muscles(self):
+        """
+        :return: The list of the muscles in this EMG.
+        :rtype: List of string
+        """
+        return list(self.data.columns)[2:]
+
 
     def norm_voltage(self, muscles):
+        """
+        Normalize records corresponding to *muscles*.
+        Each record is normalize independently following the formula below
+        .. math::
+
+            zi = xi - min(x) / max(x) - min(x)
+
+        where x=(x1,...,xn) and zi is now your with normalized data.
+
+        :param muscles: The muscle to normalize.
+        :type muscles: list of string. each string must match to a data column.
+        """
         for col in muscles:
             voltage = self.data[col]
             v_min = voltage.min()
@@ -132,6 +218,20 @@ class EmgData:
 
 
     def to_tsv(self, file=None, header=False):
+        """
+        Write this header in tsv according the *.emt* file format
+
+        :param file: Optional buffer to write to.
+                    If None is provided the result is returned as a string.
+        :type file: StringIO-like or file-like object.
+        :param header: boolean or list of string, default False
+                       Write out the column names.
+                       If a list of strings is given it is assumed
+                       to be aliases for the column names.
+        :type header: boolean
+        :returns: The header formatted into *'.emt'* format
+        :rtype: file-like object or string
+        """
         buffer = file if file is not None else StringIO()
         self.data.to_csv(path_or_buf=buffer,
                          header=header,
