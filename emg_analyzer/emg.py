@@ -41,7 +41,8 @@ class Emg:
     def norm(self):
         """
         Normalize each Voltage records.
-        Each record is normalize independently following the formula below
+        Each record is normalize independently following the formula below.
+
         .. math::
 
             zi = xi - min(x) / max(x) - min(x)
@@ -84,12 +85,12 @@ class EmgHeader:
 Type:         \t{type}
 Measure unit: \t{unit}
 
-Tracks:       \t{tracks}
+Tracks:       \t{tracks_nb}
 Frequency:    \t{freq}
 Frames:       \t{frames}
 Start time:   \t{start_time:.3f}
 
- Frame\t  Time\t{muscles}\t
+ Frame\t  Time\t{tracks_names}\t
 """
 
     def __init__(self):
@@ -98,11 +99,11 @@ Start time:   \t{start_time:.3f}
         """
         self.type = None
         self.unit = None
-        self.tracks = None
+        self.tracks_nb = None
         self.freq = None
         self.frames = None
         self.start_time = None
-        self.muscles = None
+        self.tracks_names = None
 
 
     def parse(self, emt_file):
@@ -120,7 +121,7 @@ Start time:   \t{start_time:.3f}
             elif line.startswith('Measure unit:'):
                 self.unit = line.split('\t')[1].strip()
             elif line.startswith('Tracks:'):
-                self.tracks = int(line.split('\t')[1].strip())
+                self.tracks_nb = int(line.split('\t')[1].strip())
             elif line.startswith('Frequency:'):
                 self.freq = line.split('\t')[1].strip()
             elif line.startswith('Frames:'):
@@ -130,11 +131,16 @@ Start time:   \t{start_time:.3f}
             elif line.startswith(' Frame\t'):
                 columns = line.split('\t')
                 columns = columns[2:-1]
-                self.muscles = [c.replace('Voltage:', '') for c in columns]
+                self.tracks_names = [c.replace('Voltage:', '') for c in columns]
                 break
             else:
                 continue
-        assert all([v is not None for v in self.__dict__.values()])
+        assert all([v is not None for v in self.__dict__.values()]), \
+            "ERROR during parsing '{}': {}".format(emt_file.name,
+                                                    ', '.join([k for k, v in self.__dict__.items() if v is None]))
+        assert len(self.tracks_names) == self.tracks_nb, \
+            "ERROR during parsing '{}': tracks number does not match tracks.".format(emt_file.name)
+
 
 
     def to_tsv(self, file=None):
@@ -149,7 +155,7 @@ Start time:   \t{start_time:.3f}
         """
         buffer = file if file is not None else StringIO()
         fields = {k: v for k, v in self.__dict__.items()}
-        fields['muscles'] = '\t'.join(['Voltage:{}'.format(m) for m in self.muscles])
+        fields['tracks_names'] = '\t'.join(['Voltage:{}'.format(m) for m in self.tracks_names])
         buffer.write(self._template.format(**fields))
         if file is None:
             buffer = buffer.getvalue()
@@ -196,7 +202,7 @@ class EmgData:
         return list(self.data.columns)[2:]
 
 
-    def norm_voltage(self, muscles):
+    def norm_voltage(self, tracks_names):
         """
         Normalize records corresponding to *muscles*.
         Each record is normalize independently following the formula below
@@ -206,10 +212,10 @@ class EmgData:
 
         where x=(x1,...,xn) and zi is now your with normalized data.
 
-        :param muscles: The muscle to normalize.
-        :type muscles: list of string. each string must match to a data column.
+        :param tracks_names: The name of the tracks to normalize.
+        :type tracks_names: list of string. each string must match to a data column.
         """
-        for col in muscles:
+        for col in tracks_names:
             voltage = self.data[col]
             v_min = voltage.min()
             voltage -= v_min  # do it in place on data frame
