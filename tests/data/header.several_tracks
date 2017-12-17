@@ -1,0 +1,11 @@
+BTS ASCII format
+
+Type:         	Emg tracks
+Measure unit: 	V
+
+Tracks:       	5
+Frequency:    	1000 Hz
+Frames:       	20850
+Start time:   	0.000
+
+ Frame	  Time	Voltage:RDA~2	Voltage:RTRI~2	Voltage:RDP~2	Voltage:RBI~2	Voltage:RFLCar~2	

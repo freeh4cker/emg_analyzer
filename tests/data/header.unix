@@ -1,0 +1,11 @@
+BTS ASCII format
+
+Type:         	Emg tracks
+Measure unit: 	V
+
+Tracks:       	1
+Frequency:    	1000 Hz
+Frames:       	33780
+Start time:   	0.000
+
+ Frame	  Time	Voltage:LDA~2	
