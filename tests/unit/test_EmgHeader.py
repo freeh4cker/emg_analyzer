@@ -1,3 +1,4 @@
+from io import StringIO
 
 try:
     from tests import EmgTest
@@ -61,5 +62,15 @@ class TestEmgHeader(EmgTest):
                          "ERROR during parsing '{}': tracks number does not match tracks.".format(emt_path))
 
     def test_to_tsv(self):
-        pass
+        header = EmgHeader()
+        emt_path = self.get_data('header.several_tracks')
+        with open(emt_path) as emt_file:
+            header.parse(emt_file)
+        emt_file = StringIO()
+        header.to_tsv(emt_file)
+        generated_header = emt_file.getvalue()
+        ori_header = open(emt_path).read()
+        self.assertEqual(generated_header, ori_header)
+
+
 
