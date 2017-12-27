@@ -49,8 +49,7 @@ class Emg:
 
         where x=(x1,...,xn) and zi is now your with normalized data.
         """
-        self.data.norm_voltage(self.header.muscles)
-        self.header.unit = "{} Normalized".format(self.header.unit)
+        self.data.norm_tracks(self.header.tracks_names)
 
 
     def to_emt(self, emt_file=None):
