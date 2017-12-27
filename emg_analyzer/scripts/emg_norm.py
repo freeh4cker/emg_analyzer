@@ -52,6 +52,7 @@ def norm_one_dir(path, dest=''):
     with os.scandir(path) as dir_it:
         for entry in dir_it:
             if not entry.name.startswith('.') and entry.is_file() and entry.name.endswith('.emt'):
+                print("Normalizing", entry.name)
                 norm_one_emg_file(entry.path, dest=norm_path)
             elif entry.is_dir():
                 norm_one_dir(entry.path, dest=norm_path)
