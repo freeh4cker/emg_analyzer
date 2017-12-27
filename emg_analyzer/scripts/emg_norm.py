@@ -41,6 +41,7 @@ def norm_one_emg_file(emg_path, dest=''):
 
 
 def norm_one_dir(path, dest=''):
+    path = path.rstrip(os.sep)
     root_dir, basename = os.path.split(path)
     norm_dir = "{}_norm".format(basename.replace(' ', '_'))
     if dest:
