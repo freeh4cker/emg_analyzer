@@ -22,7 +22,7 @@ class TestEmgData(EmgTest):
             data_recieved.parse(data_file, columns[2:])
         pd.util.testing.assert_frame_equal(data_expected, data_recieved.data)
 
-    def test_muscles(self):
+    def test_tracks(self):
         pass
 
     def test_norm_tracks(self):
