@@ -9,8 +9,8 @@
 
 import argparse
 import os
-import argparse_utils
 from emg_analyzer import emg
+from emg_analyzer import argparse_utils
 
 
 def get_version_message():
