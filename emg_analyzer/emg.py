@@ -198,7 +198,7 @@ class EmgData:
         :return: The list of the tracks in this EMG.
         :rtype: List of string
         """
-        return list(self.data.columns)[2:]
+        return list(self.data.columns)[1:]
 
 
     def norm_tracks(self, tracks_names):
