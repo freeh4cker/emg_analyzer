@@ -220,11 +220,13 @@ class EmgData:
             track -= v_min  # do it in place on data frame
             v_max = track.max()
             track /= v_max
+        self.data = self.data.round({t: 3 for t in self.tracks})
+
 
 
     def to_tsv(self, file=None, header=False):
         """
-        Write this header in tsv according the *.emt* file format
+        Write this data in tsv according the *.emt* file format
 
         :param file: Optional buffer to write to.
                     If None is provided the result is returned as a string.
