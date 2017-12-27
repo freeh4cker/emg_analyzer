@@ -35,7 +35,7 @@ class Emg:
         self.header = EmgHeader()
         self.header.parse(emt_file)
         self.data = EmgData()
-        self.data.parse(emt_file, self.header.muscles)
+        self.data.parse(emt_file, self.header.tracks_names)
 
 
     def norm(self):
@@ -174,16 +174,16 @@ class EmgData:
         self.data = None
 
 
-    def parse(self, emt_file, columns):
+    def parse(self, emt_file, tracks):
         """
         Parse emt_file to fill this object.
 
         :param emt_file: the file to parse
         :type emt_file: file object
-        :param columns: The list of the muscles to parse.
-        :type columns: List of string
+        :param tracks: The list of the tracks to parse.
+        :type tracks: List of string
         """
-        columns = ['Frame', 'Time'] + columns
+        columns = ['Frame', 'Time'] + tracks
         self.data = pd.read_table(emt_file,
                                   sep='\t',
                                   names=columns,
@@ -194,17 +194,17 @@ class EmgData:
                                   )
 
     @property
-    def muscles(self):
+    def tracks(self):
         """
-        :return: The list of the muscles in this EMG.
+        :return: The list of the tracks in this EMG.
         :rtype: List of string
         """
         return list(self.data.columns)[2:]
 
 
-    def norm_voltage(self, tracks_names):
+    def norm_tracks(self, tracks_names):
         """
-        Normalize records corresponding to *muscles*.
+        Normalize records corresponding to *tracks*.
         Each record is normalize independently following the formula below
         .. math::
 
@@ -216,11 +216,11 @@ class EmgData:
         :type tracks_names: list of string. each string must match to a data column.
         """
         for col in tracks_names:
-            voltage = self.data[col]
-            v_min = voltage.min()
-            voltage -= v_min  # do it in place on data frame
-            v_max = voltage.max()
-            voltage /= v_max
+            track = self.data[col]
+            v_min = track.min()
+            track -= v_min  # do it in place on data frame
+            v_max = track.max()
+            track /= v_max
 
 
     def to_tsv(self, file=None, header=False):
