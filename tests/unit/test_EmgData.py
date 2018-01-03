@@ -79,6 +79,13 @@ class TestEmgData(EmgTest):
         with open(data_expected_path) as data_file:
             data.parse(data_file, tracks)
         data_received = data.to_tsv(file=io.StringIO())
+
         with open(data_expected_path) as data_expected_file:
             for line_expected, line_recieved in zip(data_expected_file, data_received):
                 self.assertEqual(line_expected, line_recieved)
+
+        data_received = data.to_tsv()
+        data_received = data_received.split('\n')
+        with open(data_expected_path) as data_expected_file:
+            for line_expected, line_recieved in zip(data_expected_file, data_received):
+                self.assertEqual(line_expected, line_recieved + '\n')

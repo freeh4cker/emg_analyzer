@@ -67,10 +67,15 @@ class TestEmgHeader(EmgTest):
         with open(emt_path) as emt_file:
             header.parse(emt_file)
         emt_file = StringIO()
-        header.to_tsv(emt_file)
+        header.to_tsv(file=emt_file)
         generated_header = emt_file.getvalue()
         ori_header = open(emt_path).read()
         self.assertEqual(generated_header, ori_header)
 
+        header_received = header.to_tsv()
+        header_received = header_received.split('\n')
+        with open(emt_path) as header_expected:
+            for line_expected, line_recieved in zip(header_expected, header_received):
+                self.assertEqual(line_expected, line_recieved + '\n')
 
 
