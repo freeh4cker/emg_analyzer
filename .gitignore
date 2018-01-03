@@ -34,4 +34,10 @@ dist/
 doc/_build/
 MANIFEST.in
 
+##################
+# coverage files #
+##################
+.coverage
+htmlcov/
+
 
