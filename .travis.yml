@@ -14,8 +14,7 @@ before_install:
 
 # command to install integron_finder
 install:
-  - python setup.py sdist
-  - pip install dist/emg_analyzer*.tar.gz
+  - pip install .
 
 # test emg_analyzer
 script:
