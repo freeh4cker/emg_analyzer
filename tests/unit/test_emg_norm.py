@@ -89,6 +89,50 @@ Using:
             finally:
                 sys.exit = real_exit
 
+    def test_main_one_file(self):
+        emt_path_ori = self.get_data('two_tracks.emt')
+        emt_path_exp = self.get_data('two_tracks_norm.emt')
+        cwd = os.getcwd()
+        with tempfile.TemporaryDirectory() as tmp_dir_name:
+            os.chdir(tmp_dir_name)
+
+            emt_path = shutil.copy(emt_path_ori, tmp_dir_name)
+            root_dir, basename = os.path.split(emt_path)
+            normed_filename, ext = os.path.splitext(basename)
+            normed_filename = normed_filename.replace(' ', '_')
+            normed_filename = "{}_norm{}".format(normed_filename, ext)
+
+            emg_norm.main(args=[emt_path])
+            self.assertTrue(self.compare_2_files(normed_filename, emt_path_exp))
+            os.chdir(cwd)
+
+    def test_main_one_dir(self):
+        emt_path_ori = self.get_data('two_tracks.emt')
+        emt_path_exp = self.get_data('two_tracks_norm.emt')
+        cwd = os.getcwd()
+        with self.catch_output(err=True):
+            with tempfile.TemporaryDirectory() as tmp_dir_name:
+                os.chdir(tmp_dir_name)
+
+                # create 3 nested directories with one emt file in each
+                level = tmp_dir_name
+                for i in (0, 1, 2):
+                    level = os.path.join(level, 'level{}'.format(i))
+                    os.mkdir(level)
+                    shutil.copy(emt_path_ori, level)
+
+                emg_norm.main(args=['level0'])
+                norm_path = "level0_norm"
+
+                level = tmp_dir_name
+                for i in (0, 1, 2):
+                    level = os.path.join(level, 'level{}'.format(i))
+                    self.assertTrue(os.path.exists(norm_path))
+                    self.assertTrue(os.path.isdir(norm_path))
+                    self.assertTrue(self.compare_2_files(os.path.join(norm_path, 'two_tracks_norm.emt'),
+                                                         emt_path_exp))
+                os.chdir(cwd)
+
 
     def compare_2_files(self, f1, f2):
         return open(f1).read() == open(f2).read()
