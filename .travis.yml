@@ -1,0 +1,26 @@
+language: python
+python:
+  - "3.6"
+# Apply only on main branches
+branches:
+  except:
+       - /^feat.*$/
+
+# command to install dependencies
+before_install:
+  - sudo apt-get update
+  - sudo apt-get -y install python-pip python-numpy python-pandas
+  - pip install python-coveralls coverage
+
+# command to install integron_finder
+install:
+  - python setup.py sdist
+  - pip install dist/emg_analyzer*.tar.gz
+
+# test emg_analyzer
+script:
+  - coverage run --source=emg_analyzer tests/run_tests.py -vv --unit
+  - coverage report
+
+after_success:
+  - coveralls
