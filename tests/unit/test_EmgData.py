@@ -50,6 +50,32 @@ class TestEmgData(EmgTest):
             data_received.parse(data_file, tracks)
         self.assertListEqual(tracks, data_received.tracks)
 
+    def test_eq(self):
+        data_1 = EmgData()
+        data_path = self.get_data('data_two_tracks.emt')
+        tracks = ['A', 'B']
+        with open(data_path) as data_file:
+            data_1.parse(data_file, tracks=tracks)
+
+        data_2 = EmgData()
+        with open(data_path) as data_file:
+            data_2.parse(data_file, tracks=tracks)
+        self.assertTrue(data_1 == data_2)
+
+        data_2 = EmgData()
+        with open(data_path) as data_file:
+            data_2.parse(data_file, tracks=['A', 'C'])
+        self.assertFalse(data_1 == data_2)
+
+        data_2 = EmgData()
+        with open(data_path) as data_file:
+            data_2.parse(data_file, tracks=tracks)
+        data_2.data = data_1.data[['Time', 'A']]
+        self.assertFalse(data_1 == data_2)
+
+        data_2.data += 1
+        self.assertFalse(data_1 == data_2)
+
 
     def test_norm_tracks(self):
         columns = ['Frame', 'Time', 'A', 'B']
