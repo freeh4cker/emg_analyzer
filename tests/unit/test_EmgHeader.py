@@ -61,6 +61,21 @@ class TestEmgHeader(EmgTest):
         self.assertEqual(str(ctx.exception),
                          "ERROR during parsing '{}': tracks number does not match tracks.".format(emt_path))
 
+    def test_eq(self):
+        header_1 = EmgHeader()
+        header_path = self.get_data('header_two_tracks.emt')
+        with open(header_path) as header_file:
+            header_1.parse(header_file)
+
+        header_2 = EmgHeader()
+        with open(header_path) as header_file:
+            header_2.parse(header_file)
+        self.assertTrue(header_1 == header_2)
+
+        header_2.tracks_nb += 1
+        self.assertFalse(header_1 == header_2)
+
+
     def test_to_tsv(self):
         header = EmgHeader()
         emt_path = self.get_data('header.several_tracks')
