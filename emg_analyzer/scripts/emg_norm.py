@@ -82,7 +82,14 @@ def norm_one_dir(path, dest=''):
     return norm_path
 
 
-def main():
+def main(args=None):
+    """
+
+    :param args:
+    :return:
+    """
+    args = sys.argv[1:] if args is None else args
+
     parser = argparse.ArgumentParser()
     parser.add_argument('emg_path',
                         nargs='+',
@@ -92,7 +99,7 @@ def main():
                         version=get_version_message(),
                         help='Display version and exit.')
 
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     for path in args.emg_path:
         if os.path.isdir(path):
             norm_one_dir(path)
