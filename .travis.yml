@@ -12,7 +12,7 @@ before_install:
   - sudo apt-get -y install python-pip python-numpy python-pandas
   - pip install python-coveralls coverage
 
-# command to install integron_finder
+# command to install emg_analyzer
 install:
   - pip install -e .
 
