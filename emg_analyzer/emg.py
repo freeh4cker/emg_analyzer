@@ -62,25 +62,25 @@ class Emg:
         self.data.norm_tracks(self.header.tracks_names)
 
 
-    def to_emt(self, emt_file=None):
+    def to_emt(self, file=None):
         """
         Write the emg in .emt file format
 
-        :param emt_file: Optional buffer to write to.
-                        If None is provided the result is returned as a string.
-        :type emt_file: StringIO-like or file-like object.
+        :param file: Optional buffer to write to.
+                     If None is provided the result is returned as a string.
+        :type file: StringIO-like or file-like object.
         :returns: The emg formatted to *'.emt'* format
         :rtype: file-like object or string
         """
-        buffer = emt_file if emt_file is not None else StringIO()
+        buffer = file if file is not None else StringIO()
         self.header.to_tsv(file=buffer)
         self.data.to_tsv(file=buffer)
-        if emt_file is None:
+        if file is None:
             buffer = buffer.getvalue()
         return buffer
 
 
-    def to_graph(self):
+    def to_plot(self):
         pass
 
 
