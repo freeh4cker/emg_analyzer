@@ -105,6 +105,13 @@ Start time:   \t{start_time:.3f}
         self.tracks_names = None
 
 
+    def __eq__(self, other):
+        for attr, val in self.__dict__.items():
+            if getattr(other, attr) != val:
+                return False
+        return True
+
+
     def parse(self, emt_file):
         """
         Parse emt_file to fill this object
