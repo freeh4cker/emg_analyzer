@@ -1,0 +1,11 @@
+BTS ASCII format
+
+Type:         	Emg tracks
+Measure unit: 	V
+
+Tracks:       	2
+Frequency:    	1000 Hz
+Frames:       	29790
+Start time:   	0.000
+
+ Frame	  Time	Voltage:RTRI~2	Voltage:RBI~2	
