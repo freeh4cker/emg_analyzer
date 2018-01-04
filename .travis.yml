@@ -14,7 +14,7 @@ before_install:
 
 # command to install integron_finder
 install:
-  - pip install .
+  - pip install -e .
 
 # test emg_analyzer
 script:
