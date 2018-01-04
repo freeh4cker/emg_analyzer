@@ -59,5 +59,36 @@ Using:
                     self.assertTrue(self.compare_2_files(os.path.join(norm_path, 'two_tracks_norm.emt'),
                                                          emt_path_exp))
 
+
+    def test_main_version(self):
+        import sys
+        real_exit = sys.exit
+
+        def fake_exit(*args, **kwargs):
+            raise TypeError()
+
+        sys.exit = fake_exit
+        with self.catch_output(out=True) as flow:
+            try:
+                emg_norm.main(args=['--version'])
+            except TypeError:
+                out, err = flow
+                import emg_analyzer
+                import pandas
+                import numpy
+                expected_msg = """emg_norm: {emg_vers}
+
+Using: 
+    - pandas: {pd_vers}
+    - numpy: {np_vers}
+""".format(emg_vers=emg_analyzer.__version__,
+           pd_vers=pandas.__version__,
+           np_vers=numpy.__version__)
+                msg = out.getvalue()
+                self.assertEqual(msg, expected_msg)
+            finally:
+                sys.exit = real_exit
+
+
     def compare_2_files(self, f1, f2):
         return open(f1).read() == open(f2).read()
