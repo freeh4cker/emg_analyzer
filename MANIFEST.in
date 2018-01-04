@@ -1,6 +1,9 @@
 include emg_analyzer
 
 recursive-include doc/build/html *
+recursive-include tests/
+recursive-include tests/data/ *
+
 
 include README.md
 include LICENSE
