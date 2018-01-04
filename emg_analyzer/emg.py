@@ -26,6 +26,15 @@ class Emg:
         self.data = None
 
 
+    def __eq__(self, other):
+        """
+
+        :param other:
+        :return:
+        """
+        return self.header == other.header and self.data == other.data
+
+
     def parse(self, emt_file):
         """
         Parse emt_file to fill this object.
