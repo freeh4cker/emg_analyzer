@@ -31,10 +31,11 @@ Using:
 def norm_one_emg_file(emg_path, dest=''):
     """
     Normalize an EMG ('.emt') file.
-    Create a new file postpend with '_norm' beside the original file.
+    Create a new file postpend with '_norm'.
 
     :param str emg_path: the path of the emt file to normalize
-    :param str dest: the directory to put the normalized file
+    :param str dest: the directory to put the normalized file,
+                     default is current working directory
     :return: the path of the normalized file.
     :rtype: str
     """
