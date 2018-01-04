@@ -37,7 +37,7 @@ def norm_one_emg_file(emg_path, dest=''):
     normed_path = os.path.join(dest, normed_filename)
 
     with open(normed_path, 'w') as normed_file:
-        my_emg.to_emt(emt_file=normed_file)
+        my_emg.to_emt(file=normed_file)
 
 
 def norm_one_dir(path, dest=''):
