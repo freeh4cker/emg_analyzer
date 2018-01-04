@@ -8,6 +8,7 @@
 ##########################################################################
 
 from io import StringIO
+import numpy as np
 import pandas as pd
 
 
@@ -178,6 +179,14 @@ class EmgData:
         Initialization of EmgData object.
         """
         self.data = None
+
+    def __eq__(self, other):
+        if other.data.shape != self.data.shape:
+            return False
+        if all(other.data.columns == self.data.columns):
+            return np.isclose(self.data, other.data).all()
+        else:
+            return False
 
 
     def parse(self, emt_file, tracks):
