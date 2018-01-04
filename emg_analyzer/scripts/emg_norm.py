@@ -16,15 +16,25 @@ from emg_analyzer import argparse_utils
 def get_version_message():
     import emg_analyzer
     import pandas
-    version_text = """emg_norm: {}
+    import numpy
+    version_text = """emg_norm: {emg_vers}
 
 Using: 
-    - pandas: {}""".format(emg_analyzer.__version__,
-                           pandas.__version__)
+    - pandas: {pd_vers}
+    - numpy: {np_vers}""".format(emg_vers=emg_analyzer.__version__,
+                                 pd_vers=pandas.__version__,
+                                 np_vers=numpy.__version__)
     return version_text
 
 
 def norm_one_emg_file(emg_path, dest=''):
+    """
+    Normalize an EMG ('.emt') file.
+    Create a new file postpend with '_norm' beside the original file.
+
+    :param str emg_path: the path of the emt file to normalize
+    :param str dest: the directory to put the normalized file
+    """
     my_emg = emg.Emg()
     with open(emg_path) as emg_file:
         my_emg.parse(emg_file)
