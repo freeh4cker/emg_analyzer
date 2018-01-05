@@ -15,15 +15,13 @@ class TestEmgData(EmgTest):
 
     def test_get_version_message(self):
         import emg_analyzer
-        import pandas
-        import numpy
         expected_msg = """emg_norm: {emg_vers}
 
 Using: 
     - pandas: {pd_vers}
     - numpy: {np_vers}""".format(emg_vers=emg_analyzer.__version__,
-                                 pd_vers=pandas.__version__,
-                                 np_vers=numpy.__version__)
+                                 pd_vers=emg_analyzer.emg.pd.__version__,
+                                 np_vers=emg_analyzer.emg.np.__version__)
         self.assertEqual(emg_norm.get_version_message(), expected_msg)
 
 
@@ -74,20 +72,19 @@ Using:
             except TypeError:
                 out, err = flow
                 import emg_analyzer
-                import pandas
-                import numpy
                 expected_msg = """emg_norm: {emg_vers}
 
 Using: 
     - pandas: {pd_vers}
     - numpy: {np_vers}
 """.format(emg_vers=emg_analyzer.__version__,
-           pd_vers=pandas.__version__,
-           np_vers=numpy.__version__)
+           pd_vers=emg_analyzer.emg.pd.__version__,
+           np_vers=emg_analyzer.emg.np.__version__)
                 msg = out.getvalue()
                 self.assertEqual(msg, expected_msg)
             finally:
                 sys.exit = real_exit
+
 
     def test_main_one_file(self):
         emt_path_ori = self.get_data('two_tracks.emt')
@@ -105,6 +102,7 @@ Using:
             emg_norm.main(args=[emt_path])
             self.assertTrue(self.compare_2_files(normed_filename, emt_path_exp))
             os.chdir(cwd)
+
 
     def test_main_one_dir(self):
         emt_path_ori = self.get_data('two_tracks.emt')
