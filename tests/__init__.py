@@ -14,6 +14,8 @@ class EmgTest(unittest.TestCase):
             raise FileNotFoundError("{} not found".format(data_path))
         return data_path
 
+    def compare_2_files(self, f1, f2):
+        return open(f1).read() == open(f2).read()
 
     @contextmanager
     def catch_output(self, out=False, err=False):
