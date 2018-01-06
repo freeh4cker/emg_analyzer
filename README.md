@@ -31,8 +31,7 @@ Then install the project in editable mode
 
 ```
 pip install -e git+https://github.com/freeh4cker/emg_analyzer.git#egg=emg_analyzer
-```
-If you want to contribute to 
+``` 
 
 ## quick start
 
