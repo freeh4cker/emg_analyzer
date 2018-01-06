@@ -49,14 +49,14 @@ def main(args=None):
     for path in args.emg_path:
         if os.path.isdir(path):
             process_dir(path,
-                        'norm',
+                        'norm_by_track',
                         method_args=tuple(),
                         method_kwargs={},
                         suffix='norm'
                         )
         else:
             process_one_emt_file(path,
-                                 'norm',
+                                 'norm_by_track',
                                  method_args=tuple(),
                                  method_kwargs={},
                                  suffix='norm'

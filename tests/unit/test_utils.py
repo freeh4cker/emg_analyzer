@@ -25,7 +25,7 @@ class TestUtils(EmgTest):
         with tempfile.TemporaryDirectory() as tmp_dir_name:
             emt_path = shutil.copy(emt_path_ori, tmp_dir_name)
             norm_path = utils.process_one_emt_file(emt_path,
-                                                   'norm',
+                                                   'norm_by_track',
                                                    method_args=tuple(),
                                                    method_kwargs={},
                                                    dest=tmp_dir_name,
@@ -47,7 +47,7 @@ class TestUtils(EmgTest):
                     shutil.copy(emt_path_ori, level)
 
                 norm_path = utils.process_dir(os.path.join(tmp_dir_name, 'level0'),
-                                              'norm',
+                                              'norm_by_track',
                                               method_args=tuple(),
                                               method_kwargs={},
                                               suffix='norm'

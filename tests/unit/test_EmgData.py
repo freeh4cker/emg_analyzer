@@ -84,7 +84,7 @@ class TestEmgData(EmgTest):
         self.assertFalse(data_1 == data_2)
 
 
-    def test_norm_tracks(self):
+    def test_norm_by_track(self):
         columns = ['Frame', 'Time', 'A', 'B']
         tracks = columns[2:]
         data_path = self.get_data('data_two_tracks_norm.emt')
@@ -100,7 +100,7 @@ class TestEmgData(EmgTest):
         data_received = EmgData()
         with open(data_path) as data_file:
             data_received.parse(data_file, tracks)
-        data_received.norm_tracks(tracks)
+        data_received.norm_by_track(tracks)
         pd.util.testing.assert_frame_equal(data_expected, data_received.data)
 
 

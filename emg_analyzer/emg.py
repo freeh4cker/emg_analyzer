@@ -48,7 +48,7 @@ class Emg:
         self.data.parse(emt_file, self.header.tracks_names)
 
 
-    def norm(self):
+    def norm_by_track(self):
         """
         Normalize each Voltage records.
         Each record is normalize independently following the formula below.
@@ -59,7 +59,7 @@ class Emg:
 
         where x=(x1,...,xn) and zi is now your with normalized data.
         """
-        self.data.norm_tracks(self.header.tracks_names)
+        self.data.norm_by_track(self.header.tracks_names)
 
 
     def to_emt(self, file=None):
@@ -226,7 +226,7 @@ class EmgData:
         return list(self.data.columns)[1:]
 
 
-    def norm_tracks(self, tracks_names):
+    def norm_by_track(self, tracks_names):
         """
         Normalize records corresponding to *tracks*.
         Each record is normalize independently following the formula below

@@ -37,12 +37,12 @@ class TestEmg(EmgTest):
         self.assertEqual(emg.data, expected_data)
 
 
-    def test_norm(self):
+    def test_norm_by_track(self):
         emg = Emg()
         emt_path = self.get_data('two_tracks.emt')
         with open(emt_path) as emt_file:
             emg.parse(emt_file)
-        emg.norm()
+        emg.norm_by_track()
 
         emt_norm_path = self.get_data('two_tracks_norm.emt')
         norm_emg = Emg()
