@@ -114,9 +114,27 @@ Unsure where to begin contributing to emg_analyzer? You can start by looking thr
 
 ### Pull Requests
 
-* Fill in [the required template](PULL_REQUEST_TEMPLATE.md)
-* Do not include issue numbers in the PR title
-* Document new code based on the [Documentation Style guide](#documentation-style-guide)
+#### Process
+
+1. Follow the existing code style precedent. This does not need to be strictly
+   defined as there are many thousands of lines of examples. Note the lack
+   of tabs anywhere in the project, parentheses and spacing, curly bracket
+   locations, source code layout, variable scoping, etc. and follow the
+   project's standards.
+2. For any new functionality, please write a test to be added to Continuous
+   Integration (Travis) to test it (tests can be found in the `tests/`
+   directory).
+3. The project's default copyright and header have been included in any new
+   source files.
+4. Make sure you have implemented a tests and all tests `python tests/run_tests.py`
+   succeed before submitting the PR.
+5. Is the code human understandable? This can be accomplished via a clear code
+   style as well as documentation and/or comments.
+6. The pull request will be reviewed by others, and the final merge must be
+   done by the Singularity project lead.
+7. Documentation must be provided if necessary ([next section](#documentation-style-guide))
+8. Fill in [the required template](PULL_REQUEST_TEMPLATE.md)
+9. Do not include issue numbers in the PR title
 
 ### Style guides
 
