@@ -35,7 +35,7 @@ pip install -e git+https://github.com/freeh4cker/emg_analyzer.git#egg=emg_analyz
 
 ## quick start
 
-TODO
+:construction: TODO
 
 ## Contributing 
 
