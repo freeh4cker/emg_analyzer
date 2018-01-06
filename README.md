@@ -32,7 +32,13 @@ Then install the project in editable mode
 ```
 pip install -e git+https://github.com/freeh4cker/emg_analyzer.git#egg=emg_analyzer
 ```
+If you want to contribute to 
 
 ## quick start
 
 TODO
+
+## Contributing 
+
+We encourage contributions, bug report, enhancement ... 
+But before to do that we encourage to read [the contributing guide](.github/CONTRIBUTING.md).
