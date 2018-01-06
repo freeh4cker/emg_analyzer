@@ -3,8 +3,6 @@
 Welcome! By visiting this page, 
 you've taken the first step toward becoming a contributor to emg_analyzer!
 
-You can contribute via GitHub interface.
-
 ## What skills do I need?
 
 If you know Python3 and oop, you can contribute to the code. 
@@ -18,7 +16,8 @@ support, testing, documentation, or other types of contributions.
 
 ## How Can I Contribute?
 
-
+We use Github to host the project, to submit an issue or a pull request,
+you have to create a GitHub account.
 
 ### Reporting Bugs
 
@@ -67,9 +66,9 @@ Explain the problem and include additional details to help maintainers reproduce
 
 ##### Provide more context by answering these questions:
 
-* **Did the problem start happening recently** (e.g. after updating to a new version of Atom) or was this always a problem?
-* If the problem started happening recently, **can you reproduce the problem in an older version of Atom?** 
-  What's the most recent version in which the problem doesn't happen? You can download older versions of Atom from 
+* **Did the problem start happening recently** (e.g. after updating to a new version of emg_analyzer) or was this always a problem?
+* If the problem started happening recently, **can you reproduce the problem in an older version of emg_analyzer?** 
+  What's the most recent version in which the problem doesn't happen? You can download older versions of emg_analyzer from 
   [the releases page](https://github.com/freeh4cker/emg_analyzer/releases).
 * **Can you reliably reproduce the issue?** If not, provide details about how often the problem happens and under which conditions it normally happens.
 * If the problem is related to working with files (e.g. opening and editing files), 
@@ -88,7 +87,7 @@ Fill in [the template](.github/ISSUE_TEMPLATE.md), including the steps that you 
 
 #### Before Submitting An Enhancement Suggestion
 
-* **Check if you're using [the latest version of Atom](https://github.com/freeh4cker/emg_analyzer/releases)**.
+* **Check if you're using [the latest version of emg_analyzer](https://github.com/freeh4cker/emg_analyzer/releases)**.
 * **Perform a [cursory search](https://github.com/freeh4cker/emg_analyzer/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement)** 
   to see if the enhancement has already been suggested. 
   If it has, add a comment to the existing issue instead of opening a new one.
@@ -108,7 +107,7 @@ Enhancement suggestions are tracked as [GitHub issues](https://guides.github.com
 
 ### Your First Code Contribution
 
-Unsure where to begin contributing to Atom? You can start by looking through these `beginner` and `help-wanted` issues:
+Unsure where to begin contributing to emg_analyzer? You can start by looking through these `beginner` and `help-wanted` issues:
 
 * [Beginner issues][beginner] - issues which should only require a few lines of code, and a test or two.
 * [Help wanted issues][help-wanted] - issues which should be a bit more involved than `beginner` issues.
