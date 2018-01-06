@@ -144,7 +144,7 @@ Unsure where to begin contributing to emg_analyzer? You can start by looking thr
 * Reference issues and pull requests liberally after the first line
 * Consider starting the commit message with an applicable emoji:
     * :art: `:art:` when improving the format/structure of the code
-    * :memo: `:memo:` when writing docs
+    * :memo: `:pencil2:` when writing docs
     * :bug: `:bug:` when fixing a bug
     * :white_check_mark: `:white_check_mark:` when adding tests
     * :fire: `:fire:` when removing code or files
