@@ -26,7 +26,7 @@ def process_one_emt_file(emt_path, method_name, method_args, method_kwargs, dest
     with open(emt_path) as emg_file:
         my_emg.parse(emg_file)
 
-    getattr(my_emg, method_name)(*method_args, **method_kwargs)
+    processed_emg = getattr(my_emg, method_name)(*method_args, **method_kwargs)
 
     root_dir, basename = os.path.split(emt_path)
     processed_filename, ext = os.path.splitext(basename)
@@ -37,7 +37,7 @@ def process_one_emt_file(emt_path, method_name, method_args, method_kwargs, dest
     processed_path = os.path.join(dest, processed_filename)
 
     with open(processed_path, 'w') as processed_file:
-        my_emg.to_emt(file=processed_file)
+        processed_emg.to_emt(file=processed_file)
     return processed_path
 
 

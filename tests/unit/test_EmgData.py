@@ -87,7 +87,7 @@ class TestEmgData(EmgTest):
     def test_norm_by_track(self):
         columns = ['Frame', 'Time', 'A', 'B']
         tracks = columns[2:]
-        data_path = self.get_data('data_two_tracks_norm.emt')
+        data_path = self.get_data('data_two_tracks_norm_by_track.emt')
         data_expected = pd.read_csv(data_path,
                                     sep='\t',
                                     names=columns,
@@ -100,14 +100,14 @@ class TestEmgData(EmgTest):
         data_received = EmgData()
         with open(data_path) as data_file:
             data_received.parse(data_file, tracks)
-        data_received.norm_by_track(tracks)
+        data_received = data_received.norm_by_track(tracks)
         pd.util.testing.assert_frame_equal(data_expected, data_received.data)
 
 
     def test_to_tsv(self):
         columns = ['Frame', 'Time', 'A', 'B']
         tracks = columns[2:]
-        data_expected_path = self.get_data('data_two_tracks_norm.emt')
+        data_expected_path = self.get_data('data_two_tracks_norm_by_track.emt')
         data = EmgData()
         with open(data_expected_path) as data_file:
             data.parse(data_file, tracks)

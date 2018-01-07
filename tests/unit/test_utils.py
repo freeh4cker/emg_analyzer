@@ -21,7 +21,7 @@ class TestUtils(EmgTest):
 
     def process_one_emt_file(self):
         emt_path_ori = self.get_data('two_tracks.emt')
-        emt_path_exp = self.get_data('two_tracks_norm.emt')
+        emt_path_exp = self.get_data('two_tracks_norm_by_track.emt')
         with tempfile.TemporaryDirectory() as tmp_dir_name:
             emt_path = shutil.copy(emt_path_ori, tmp_dir_name)
             norm_path = utils.process_one_emt_file(emt_path,
@@ -35,7 +35,7 @@ class TestUtils(EmgTest):
 
     def test_process_dir(self):
         emt_path_ori = self.get_data('two_tracks.emt')
-        emt_path_exp = self.get_data('two_tracks_norm.emt')
+        emt_path_exp = self.get_data('two_tracks_norm_by_track.emt')
         with self.catch_output(err=True):
             with tempfile.TemporaryDirectory() as tmp_dir_name:
 

@@ -40,23 +40,28 @@ def main(args=None):
     parser.add_argument('emg_path',
                         nargs='+',
                         help="The path to '.emt' file or a directory containing '.emt' files.")
+    parser.add_argument('--by-track',
+                        action='store_true',
+                        default=False,
+                        help='normalize track by track instead of all tracks together')
     parser.add_argument('--version',
                         action=argparse_utils.VersionAction,
                         version=get_version_message(),
                         help='Display version and exit.')
 
     args = parser.parse_args(args)
+    norm_method = 'norm_by_track' if args.by_track else 'norm'
     for path in args.emg_path:
         if os.path.isdir(path):
             process_dir(path,
-                        'norm_by_track',
+                        norm_method,
                         method_args=tuple(),
                         method_kwargs={},
                         suffix='norm'
                         )
         else:
             process_one_emt_file(path,
-                                 'norm_by_track',
+                                 norm_method,
                                  method_args=tuple(),
                                  method_kwargs={},
                                  suffix='norm'

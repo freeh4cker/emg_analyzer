@@ -59,7 +59,32 @@ class Emg:
 
         where x=(x1,...,xn) and zi is now your with normalized data.
         """
-        self.data.norm_by_track(self.header.tracks_names)
+        new_emg = Emg()
+        new_header = self.header.copy()
+        new_data = self.data.norm_by_track(self.header.tracks_names)
+        new_emg.header = new_header
+        new_emg.data = new_data
+        return new_emg
+
+
+    def norm(self):
+        """
+        Compute a new Emg where tracks are normalized (all together) following the formula below
+        .. math::
+
+            zi = xi - min(x) / max(x) - min(x)
+
+        where x=(x1,...,xn) and zi is now your matrix with normalized data.
+
+        :return: a new Emg
+        :rtype: :class:`Emg` object
+        """
+        new_emg = Emg()
+        new_header = self.header.copy()
+        new_data = self.data.norm()
+        new_emg.header = new_header
+        new_emg.data = new_data
+        return new_emg
 
 
     def to_emt(self, file=None):
@@ -120,6 +145,17 @@ Start time:   \t{start_time:.3f}
             if getattr(other, attr) != val:
                 return False
         return True
+
+
+    def copy(self):
+        """
+        :return: a deep copy of the header
+        :rtype: a :class:`EmgHeader` object.
+        """
+        new_header = EmgHeader()
+        for attr, value in self.__dict__.items():
+            setattr(new_header, attr, value)
+        return new_header
 
 
     def parse(self, emt_file):
@@ -226,27 +262,79 @@ class EmgData:
         return list(self.data.columns)[1:]
 
 
+    def _split_data(self):
+        """
+        :return: split data in 2 DataFrame
+                 the first DataFrame contain time and the second one correspond to tracks.
+        :rtype: tuple of 2 :class:`pd.DataFrame` object
+        """
+        time = self.data.iloc[:, 0:1]
+        data = self.data.iloc[:, 1:]
+        return time, data
+
+
+    def _new_data(self, data):
+        """
+        :param data: DataFrame to put in EmgData
+        :type data: :class:`pd.DataFrame` object
+        :return: new EmgData
+        :rtype: :class:`pd.DataFrame` object
+        """
+        new_data = EmgData()
+        new_data.data = data
+        return new_data
+
+
     def norm_by_track(self, tracks_names):
         """
-        Normalize records corresponding to *tracks*.
-        Each record is normalize independently following the formula below
+        Compute a new EmgData where each track is normalized
+        independently following the formula below
         .. math::
 
             zi = xi - min(x) / max(x) - min(x)
 
-        where x=(x1,...,xn) and zi is now your with normalized data.
+        where x=(x1,...,xn) and zi is now your matrix with normalized data.
 
         :param tracks_names: The name of the tracks to normalize.
         :type tracks_names: list of string. each string must match to a data column.
+        :return: a new EmgData
+        :rtype: :class:`EmgData` object
         """
+        time, data = self._split_data()
         for col in tracks_names:
-            track = self.data[col]
+            track = data[col]
             v_min = track.min()
             track -= v_min  # do it in place on data frame
             v_max = track.max()
             track /= v_max
-        self.data = self.data.round({t: 3 for t in self.tracks})
+        data = data.round(decimals=3)
+        data = pd.concat([time, data], axis=1)
+        return self._new_data(data)
 
+
+    def norm(self):
+        """
+        Compute a new EmgData where tracks are normalized following the formula below
+        .. math::
+
+            zi = xi - min(x) / max(x) - min(x)
+
+        where x=(x1,...,xn) and zi is now your matrix with normalized data.
+
+        :param tracks_names: The name of the tracks to normalize.
+        :type tracks_names: list of string. each string must match to a data column.
+        :return: a new EmgData
+        :rtype: :class:`EmgData` object
+        """
+
+        time, data = self._split_data()
+        v_min = data.min().min()
+        data -= v_min
+        v_max = data.max().max()
+        data /= v_max
+        data = data.round(decimals=3)
+        data = pd.concat([time, data], axis=1)
+        return self._new_data(data)
 
 
     def to_tsv(self, file=None, header=False):

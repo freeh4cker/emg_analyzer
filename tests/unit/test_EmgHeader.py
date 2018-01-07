@@ -83,6 +83,17 @@ class TestEmgHeader(EmgTest):
         self.assertFalse(header_1 == header_2)
 
 
+    def test_copy(self):
+        header_1 = EmgHeader()
+        header_path = self.get_data('header_two_tracks.emt')
+        with open(header_path) as header_file:
+            header_1.parse(header_file)
+
+        header_2 = header_1.copy()
+        self.assertFalse(header_1 is header_2)
+        self.assertEqual(header_1, header_2)
+
+
     def test_to_tsv(self):
         header = EmgHeader()
         emt_path = self.get_data('header.several_tracks')

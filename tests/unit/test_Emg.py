@@ -36,23 +36,37 @@ class TestEmg(EmgTest):
             expected_data.parse(data_file, tracks=expected_header.tracks_names)
         self.assertEqual(emg.data, expected_data)
 
+    def test_norm(self):
+        emg = Emg()
+        emt_path = self.get_data('two_tracks.emt')
+        with open(emt_path) as emt_file:
+            emg.parse(emt_file)
+        norm_emg = emg.norm()
+
+        expected_emt_path = self.get_data('two_tracks_norm.emt')
+        expected_emg = Emg()
+        with open(expected_emt_path) as expected_emt_file:
+            expected_emg.parse(expected_emt_file)
+        self.assertEqual(expected_emg, norm_emg)
+
 
     def test_norm_by_track(self):
         emg = Emg()
         emt_path = self.get_data('two_tracks.emt')
         with open(emt_path) as emt_file:
             emg.parse(emt_file)
-        emg.norm_by_track()
+        norm_emg = emg.norm_by_track()
 
-        emt_norm_path = self.get_data('two_tracks_norm.emt')
-        norm_emg = Emg()
-        with open(emt_norm_path) as emt_norm_file:
-            norm_emg.parse(emt_norm_file)
-        self.assertEqual(emg, norm_emg)
+        expected_emt_path = self.get_data('two_tracks_norm_by_track.emt')
+        expected_emg = Emg()
+        with open(expected_emt_path) as expected_emt_file:
+            expected_emg.parse(expected_emt_file)
+        self.assertEqual(expected_emg, norm_emg)
+
 
     def test_to_emt(self):
         emg = Emg()
-        emt_path = self.get_data('two_tracks_norm.emt')
+        emt_path = self.get_data('two_tracks_norm_by_track.emt')
         with open(emt_path) as emt_file:
             emg.parse(emt_file)
         emt_file = StringIO()

@@ -60,9 +60,9 @@ Using:
                 sys.exit = real_exit
 
 
-    def test_main_one_file(self):
+    def test_main_one_file_norm_by_track(self):
         emt_path_ori = self.get_data('two_tracks.emt')
-        emt_path_exp = self.get_data('two_tracks_norm.emt')
+        emt_path_exp = self.get_data('two_tracks_norm_by_track.emt')
         cwd = os.getcwd()
         with tempfile.TemporaryDirectory() as tmp_dir_name:
             os.chdir(tmp_dir_name)
@@ -73,14 +73,14 @@ Using:
             normed_filename = normed_filename.replace(' ', '_')
             normed_filename = "{}_norm{}".format(normed_filename, ext)
 
-            emg_norm.main(args=[emt_path])
+            emg_norm.main(args=[emt_path, '--by-track'])
             self.assertTrue(self.compare_2_files(normed_filename, emt_path_exp))
             os.chdir(cwd)
 
 
     def test_main_one_dir(self):
         emt_path_ori = self.get_data('two_tracks.emt')
-        emt_path_exp = self.get_data('two_tracks_norm.emt')
+        emt_path_exp = self.get_data('two_tracks_norm_by_track.emt')
         cwd = os.getcwd()
         with self.catch_output(err=True):
             with tempfile.TemporaryDirectory() as tmp_dir_name:
@@ -93,7 +93,7 @@ Using:
                     os.mkdir(level)
                     shutil.copy(emt_path_ori, level)
 
-                emg_norm.main(args=['level0'])
+                emg_norm.main(args=['level0', '--by-track'])
                 norm_path = "level0_norm"
 
                 level = tmp_dir_name
