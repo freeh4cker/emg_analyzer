@@ -5,7 +5,10 @@
 ##########################################################################
 
 import os
-import sys
+
+import colorlog
+_log = colorlog.getLogger(__name__)
+
 from emg_analyzer import emg
 
 
@@ -62,11 +65,15 @@ def process_dir(path, method_name, method_args, method_kwargs, dest='', suffix='
         processed_path = os.path.join(dest, norm_dir)
     else:
         processed_path = os.path.join(root_dir, norm_dir)
+    if os.path.exists(processed_path):
+        _log.error("directory '{}' already exists. remove it or specify an other destination.".format(processed_path))
+        raise IOError("directory exists: {}".format(processed_path))
+
     os.mkdir(processed_path)
     with os.scandir(path) as dir_it:
         for entry in dir_it:
             if not entry.name.startswith('.') and entry.is_file() and entry.name.endswith('.emt'):
-                print("Processing", entry.path, file=sys.stderr)
+                _log.info("Processing " + entry.path)
                 process_one_emt_file(entry.path, method_name, method_args, method_kwargs, dest=processed_path, suffix=suffix)
             elif entry.is_dir():
                 process_dir(entry.path, method_name, method_args, method_kwargs, dest=processed_path, suffix=suffix)

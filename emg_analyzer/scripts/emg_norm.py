@@ -10,6 +10,8 @@
 import argparse
 import os
 import sys
+import colorlog
+import emg_analyzer
 from emg_analyzer import argparse_utils
 from emg_analyzer.utils import process_dir, process_one_emt_file
 
@@ -48,9 +50,19 @@ def main(args=None):
                         action=argparse_utils.VersionAction,
                         version=get_version_message(),
                         help='Display version and exit.')
-
+    parser.add_argument('-v', '--verbosity',
+                        action='count',
+                        default=0,
+                        help="Set the output verbosity. can be set several times -vv for instance.")
     args = parser.parse_args(args)
+
+    args.verbosity = max(10, 30 - (10 * args.verbosity))
+    emg_analyzer.logger_set_level(args.verbosity)
+    _log = colorlog.getLogger('emg_analyzer')
+
     norm_method = 'norm_by_track' if args.by_track else 'norm'
+    _log.debug("morm_method = '{}'".format(norm_method))
+
     for path in args.emg_path:
         if os.path.isdir(path):
             process_dir(path,
