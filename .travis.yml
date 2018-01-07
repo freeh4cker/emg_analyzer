@@ -18,7 +18,7 @@ install:
 
 # test emg_analyzer
 script:
-  - coverage run --source=emg_analyzer tests/run_tests.py -vv --unit
+  - coverage run --source=emg_analyzer tests/run_tests.py -vv
   - coverage report
 
 after_success:
