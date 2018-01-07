@@ -66,7 +66,7 @@ def process_dir(path, method_name, method_args, method_kwargs, dest='', suffix='
     else:
         processed_path = os.path.join(root_dir, norm_dir)
     if os.path.exists(processed_path):
-        _log.error("directory '{}' already exists. remove it or specify an other destination.".format(processed_path))
+        _log.error("directory '{}' already exists, remove it.".format(processed_path))
         raise IOError("directory exists: {}".format(processed_path))
 
     os.mkdir(processed_path)
