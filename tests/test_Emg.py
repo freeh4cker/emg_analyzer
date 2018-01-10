@@ -36,6 +36,8 @@ class TestEmg(EmgTest):
             expected_data.parse(data_file, tracks=expected_header.tracks_names)
         self.assertEqual(emg.data, expected_data)
 
+        self.assertEqual(emg.name, 'two_tracks')
+
     def test_norm(self):
         emg = Emg()
         emt_path = self.get_data('two_tracks.emt')
