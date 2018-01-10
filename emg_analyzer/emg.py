@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 ##########################################################################
-# Copyright (c) 2017-2018 Bertrand Néron. All rights reserved.                #
+# Copyright (c) 2017-2018 Bertrand Néron. All rights reserved.           #
 # Use of this source code is governed by a BSD-style license that can be #
 # found in the LICENSE file.                                             #
 ##########################################################################
 
+import os
 from io import StringIO
 import numpy as np
 import pandas as pd
@@ -22,6 +23,7 @@ class Emg:
         """
         Initialization of Emg object.
         """
+        self.name = None
         self.header = None
         self.data = None
 
@@ -42,6 +44,7 @@ class Emg:
         :param emt_file: the file to parse
         :type emt_file: file object
         """
+        self.name = os.path.splitext(os.path.basename(emt_file.name))[0]
         self.header = EmgHeader()
         self.header.parse(emt_file)
         self.data = EmgData()
