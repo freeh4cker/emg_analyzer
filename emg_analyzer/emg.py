@@ -90,6 +90,34 @@ class Emg:
         return new_emg
 
 
+    def group_by_track(self, emg_list):
+        for emg in emg_list:
+            if not((self.data.data['Time'] == emg.data.data['Time']).all().all()):
+                raise RuntimeError("The times from {} and {} are different cannot merge them".format(self.name,
+                                                                                                     emg.name))
+        merge = {}
+        emg_list.insert(0, self)
+        print(emg_list)
+        for emg in emg_list:
+            for track in emg.header.tracks_names:
+                if track in merge:
+                    merge[track].append(emg)
+                else:
+                    merge[track] = [emg]
+        merged_emg = []
+        for new_emg_name in merge:
+            new_emg = Emg()
+            new_emg.name = new_emg_name
+            new_emg.header = self.header.copy()
+            new_emg.header.tracks_nb = len(merge[new_emg_name])
+            emg_2_group = {emg.name: emg.data for emg in merge[new_emg_name]}
+            new_emg.data = self.data.group_track(new_emg_name, emg_2_group)
+            new_emg.header.tracks_names = new_emg.data.tracks
+            merged_emg.append(new_emg)
+        return merged_emg
+
+
+
     def to_emt(self, file=None):
         """
         Write the emg in .emt file format
@@ -363,3 +391,21 @@ class EmgData:
         if file is None:
             buffer = buffer.getvalue()
         return buffer
+
+
+    def group_track(self, track, emg_2_group):
+        """
+
+        :param emg_2_group:
+        :param track:
+        :return:
+        """
+        data = self.data['Time']
+        series = []
+        for name, emg in emg_2_group.items():
+            s = emg.data[track]
+            s.name = name
+            series.append(s)
+        series.insert(0, data)
+        data = pd.concat(series, axis=1)
+        return self._new_data(data)
