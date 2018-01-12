@@ -57,6 +57,15 @@ class TestEmgData(EmgTest):
             data_received.parse(data_file, tracks)
         self.assertListEqual(tracks, data_received.tracks)
 
+    def test_frames(self):
+        data = EmgData()
+        data.data = pd.DataFrame([[0, 0, 1],
+                                 [1, 1, 2],
+                                 [2, 2, 3]],
+                                 columns=['Frame', 'Time', 'A'])
+        data.data = data.data.set_index(['Frame'])
+        self.assertEqual(data.frames, 3)
+
     def test_eq(self):
         data_1 = EmgData()
         data_path = self.get_data('data_two_tracks.emt')
