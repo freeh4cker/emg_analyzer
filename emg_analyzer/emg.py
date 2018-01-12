@@ -216,8 +216,8 @@ Start time:   \t{start_time:.3f}
             elif line.startswith('Start time:'):
                 self.start_time = float(line.split('\t')[1].strip())
             elif line.startswith(' Frame\t'):
-                columns = line.split('\t')
-                columns = columns[2:-1]
+                columns = line.strip().split('\t')
+                columns = columns[2:]
                 self.tracks_names = [c.replace('Voltage:', '') for c in columns]
                 break
             else:
