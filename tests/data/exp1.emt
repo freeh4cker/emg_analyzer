@@ -1,0 +1,21 @@
+BTS ASCII format
+
+Type:         	Emg tracks
+Measure unit: 	V
+
+Tracks:       	2
+Frequency:    	1000 Hz
+Frames:       	10
+Start time:   	0.000
+
+ Frame	Time	Voltage:A	Voltage:B
+     0	 0.000	         1.10	        10.10
+     1	 0.001	         2.10	        20.10
+     2	 0.002	         3.10	        30.10
+     3	 0.003	         4.10	        40.10
+     4	 0.004	         5.10	        50.10
+     5	 0.005	         6.10	        60.10
+     6	 0.006	         7.10	        70.10
+     7	 0.007	         8.10	        80.10
+     8	 0.008	         9.10	        90.10
+     9	 0.009	        10.10	       100.10

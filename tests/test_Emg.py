@@ -35,8 +35,8 @@ class TestEmg(EmgTest):
         with open(data_path) as data_file:
             expected_data.parse(data_file, tracks=expected_header.tracks_names)
         self.assertEqual(emg.data, expected_data)
-
         self.assertEqual(emg.name, 'two_tracks')
+
 
     def test_norm(self):
         emg = Emg()
@@ -80,5 +80,40 @@ class TestEmg(EmgTest):
         emg_received = emg.to_emt()
         emg_received = emg_received.split('\n')
         with open(emt_path) as emg_expected:
-            for line_expected, line_recieved in zip(emg_expected, emg_received):
-                self.assertEqual(line_expected, line_recieved + '\n')
+            for line_expected, line_received in zip(emg_expected, emg_received):
+                self.assertEqual(line_expected, line_received + '\n')
+
+
+    def test_group_by_track(self):
+        e1, e2, e3,  e4 = Emg(), Emg(), Emg(), Emg()
+
+        with open(self.get_data('exp1.emt')) as f:
+            e1.parse(f)
+        with open(self.get_data('exp2.emt')) as f:
+            e2.parse(f)
+        with open(self.get_data('exp3.emt')) as f:
+            e3.parse(f)
+        with open(self.get_data('exp4.emt')) as f:
+            e4.parse(f)
+
+        new_d = e1.group_by_track([e2, e3, e4])
+        self.assertEqual(len(new_d), 3)
+
+        A, B, C = Emg(), Emg(), Emg()
+
+        with open(self.get_data('A.emt')) as f:
+            A.parse(f)
+        with open(self.get_data('B.emt')) as f:
+            B.parse(f)
+        with open(self.get_data('C.emt')) as f:
+            C.parse(f)
+
+        for emg_expected in (A, B, C):
+            self.assertIn(emg_expected, new_d)
+
+        more_frames = Emg()
+        with open(self.get_data('exp2_more_frames.emt')) as f:
+            more_frames.parse(f)
+
+        #with self.assertRaises(RuntimeError) as ctx:
+        #    new_d = e1.group_by_track([more_frames])
