@@ -115,7 +115,7 @@ class Emg:
             new_emg.header = self.header.copy()
             new_emg.header.tracks_nb = len(merge[new_emg_name])
             emg_2_group = {emg.name: emg.data for emg in merge[new_emg_name]}
-            new_emg.data = self.data.group_track(new_emg_name, emg_2_group)
+            new_emg.data = EmgData.group_track(new_emg_name, emg_2_group)
             new_emg.header.tracks_names = new_emg.data.tracks
             merged_emg.append(new_emg)
         return merged_emg
@@ -319,8 +319,8 @@ class EmgData:
         data = self.data.iloc[:, 1:]
         return time, data
 
-
-    def _new_data(self, data):
+    @staticmethod
+    def _new_data(data):
         """
         :param data: DataFrame to put in EmgData
         :type data: :class:`pd.DataFrame` object
@@ -409,19 +409,40 @@ class EmgData:
         return buffer
 
 
-    def group_track(self, track, emg_2_group):
+    @staticmethod
+    def group_track(track, emg_2_group):
         """
 
-        :param emg_2_group:
-        :param track:
-        :return:
+        :param emg_2_group: the data where to extract track and merge
+        :param track: dict {'name': EmgData}
+        :return: new EmgData where all tracks come from
+                 EmgData emg_2_group in named 'track' ::
+
+                 exp1: Frame Time A  B
+                        0     0   1 10
+                        1     1   2 20
+                        2     2   3 30
+
+                 exp2: Frame Time  A    B
+                        0     0   1.2 10.2
+                        1     1   2.2 20.2
+                        2     2   3.2 30.2
+
+                A:    Frame Time  exp1  exp2
+                        0     0    1    1.2
+                        1     1    2    2.2
+                        2     2    3    3.2
+
+        :rtype: :class:`EmgData` object
         """
-        data = self.data['Time']
+        one_emg = next(iter(emg_2_group.values()))
+        data = one_emg.data['Time']
         series = []
         for name, emg in emg_2_group.items():
+            # s is a pandas.Serie
             s = emg.data[track]
             s.name = name
             series.append(s)
         series.insert(0, data)
         data = pd.concat(series, axis=1)
-        return self._new_data(data)
+        return EmgData._new_data(data)
