@@ -131,3 +131,28 @@ class TestEmgData(EmgTest):
         with open(data_expected_path) as data_expected_file:
             for line_expected, line_recieved in zip(data_expected_file, data_received):
                 self.assertEqual(line_expected, line_recieved + '\n')
+
+    def test_group_track(self):
+        data_1 = EmgData()
+        data_1.data = pd.DataFrame([[0, 0, 1, 10],
+                                    [1, 1, 2, 20],
+                                    [2, 2, 3, 30]],
+                                    columns=['Frame', 'Time', 'A', 'B'])
+        data_1.data = data_1.data.set_index(['Frame'])
+
+        data_2 = EmgData()
+        data_2.data = pd.DataFrame([[0, 0, 1.2, 10.2],
+                                    [1, 1, 2.2, 20.2],
+                                    [2, 2, 3.2, 30.2]],
+                                    columns=['Frame', 'Time', 'A', 'B'])
+        data_2.data = data_2.data.set_index(['Frame'])
+
+        expected_data = pd.DataFrame([[0, 0, 1, 1.2],
+                                      [1, 1, 2, 2.2],
+                                      [2, 2, 3, 3.2]],
+                                    columns=['Frame', 'Time', 'exp_1', 'exp_2'])
+        expected_data = expected_data.set_index(['Frame'])
+
+        new_data = EmgData.group_track('A', {'exp_1': data_1, 'exp_2': data_2})
+        pd.util.testing.assert_frame_equal(new_data.data, expected_data)
+
