@@ -49,6 +49,10 @@ class Emg:
         self.header.parse(emt_file)
         self.data = EmgData()
         self.data.parse(emt_file, self.header.tracks_names)
+        if self.header.frames != self.data.frames:
+            raise RuntimeError("The number of Frames in header '{}' "
+                               "does not match data frames '{}'.".format(self.header.frames,
+                                                                       self.data.frames))
 
 
     def norm_by_track(self):
@@ -291,6 +295,16 @@ class EmgData:
         :rtype: List of string
         """
         return list(self.data.columns)[1:]
+
+
+    @property
+    def frames(self):
+        """
+
+        :return: The number of frames
+        :rtype: int
+        """
+        return len(self.data)
 
 
     def _split_data(self):
