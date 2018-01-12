@@ -66,7 +66,8 @@ class TestEmgHeader(EmgTest):
             with open(emt_path) as emt_file:
                 header.parse(emt_file)
         self.assertEqual(str(ctx.exception),
-                         "ERROR during parsing '{}': tracks number does not match tracks.".format(emt_path))
+                         "ERROR during parsing '{}': tracks number '2' does not match tracks: "
+                         "RDA~2, RTRI~2, RDP~2, RBI~2, RFLCar~2.".format(emt_path))
 
     def test_eq(self):
         header_1 = EmgHeader()
