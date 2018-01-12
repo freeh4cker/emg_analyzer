@@ -226,7 +226,9 @@ Start time:   \t{start_time:.3f}
             "ERROR during parsing '{}': {}".format(emt_file.name,
                                                     ', '.join([k for k, v in self.__dict__.items() if v is None]))
         assert len(self.tracks_names) == self.tracks_nb, \
-            "ERROR during parsing '{}': tracks number does not match tracks.".format(emt_file.name)
+            "ERROR during parsing '{}': tracks number '{}' does not match tracks: {}.".format(emt_file.name,
+                                                                                              self.tracks_nb,
+                                                                                              ", ".join(self.tracks_names))
 
 
 
