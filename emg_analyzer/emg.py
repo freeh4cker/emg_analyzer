@@ -95,13 +95,8 @@ class Emg:
 
 
     def group_by_track(self, emg_list):
-        for emg in emg_list:
-            if not((self.data.data['Time'] == emg.data.data['Time']).all().all()):
-                raise RuntimeError("The times from {} and {} are different cannot merge them".format(self.name,
-                                                                                                     emg.name))
         merge = {}
         emg_list.insert(0, self)
-        print(emg_list)
         for emg in emg_list:
             for track in emg.header.tracks_names:
                 if track in merge:
