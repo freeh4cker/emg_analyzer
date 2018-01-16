@@ -5,11 +5,28 @@
 ##########################################################################
 
 import os
+import sys
 
 import colorlog
 _log = colorlog.getLogger(__name__)
 
 from emg_analyzer import emg
+
+
+def get_version_message():
+    import emg_analyzer
+    import pandas
+    import numpy
+    version_text = """emg_group_tracks: {emg_vers}
+
+Using: 
+    - pandas: {pd_vers}
+    - numpy: {np_vers}
+    - python: {py_vers}""".format(emg_vers=emg_analyzer.__version__,
+                                  pd_vers=pandas.__version__,
+                                  np_vers=numpy.__version__,
+                                  py_vers='.'.join([str(i) for i in sys.version_info[0:3]]))
+    return version_text
 
 
 def process_one_emt_file(emt_path, method_name, method_args, method_kwargs, dest='', suffix=''):

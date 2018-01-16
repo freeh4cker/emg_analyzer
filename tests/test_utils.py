@@ -7,6 +7,7 @@
 import tempfile
 import shutil
 import os
+import sys
 
 try:
     from tests import EmgTest
@@ -27,7 +28,22 @@ emg_logger.addHandler(logging.NullHandler())
 
 class TestUtils(EmgTest):
 
-    def process_one_emt_file(self):
+    def test_get_version_message(self):
+        import emg_analyzer
+        expected_msg = """emg_group_tracks: {emg_vers}
+
+Using: 
+    - pandas: {pd_vers}
+    - numpy: {np_vers}
+    - python: {py_vers}""".format(emg_vers=emg_analyzer.__version__,
+                                  pd_vers=emg_analyzer.emg.pd.__version__,
+                                  np_vers=emg_analyzer.emg.np.__version__,
+                                  py_vers='.'.join([str(i) for i in sys.version_info[0:3]])
+                                  )
+        self.assertEqual(utils.get_version_message(), expected_msg)
+
+
+    def test_process_one_emt_file(self):
         emt_path_ori = self.get_data('two_tracks.emt')
         emt_path_exp = self.get_data('two_tracks_norm_by_track.emt')
         with tempfile.TemporaryDirectory() as tmp_dir_name:

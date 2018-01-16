@@ -13,23 +13,7 @@ import sys
 import colorlog
 import emg_analyzer
 from emg_analyzer import argparse_utils
-from emg_analyzer.utils import process_dir, process_one_emt_file
-
-
-def get_version_message():
-    import emg_analyzer
-    import pandas
-    import numpy
-    version_text = """emg_group_tracks: {emg_vers}
-
-Using: 
-    - pandas: {pd_vers}
-    - numpy: {np_vers}
-    - python: {py_vers}""".format(emg_vers=emg_analyzer.__version__,
-                                  pd_vers=pandas.__version__,
-                                  np_vers=numpy.__version__,
-                                  py_vers='.'.join([str(i) for i in sys.version_info[0:3]]))
-    return version_text
+from emg_analyzer.utils import get_version_message
 
 
 def main(args=None):

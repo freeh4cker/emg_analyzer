@@ -20,20 +20,6 @@ from emg_analyzer.scripts import emg_group_tracks
 
 class Test_emg_group_track(EmgTest):
 
-    def test_get_version_message(self):
-        import emg_analyzer
-        expected_msg = """emg_group_tracks: {emg_vers}
-
-Using: 
-    - pandas: {pd_vers}
-    - numpy: {np_vers}
-    - python: {py_vers}""".format(emg_vers=emg_analyzer.__version__,
-                                  pd_vers=emg_analyzer.emg.pd.__version__,
-                                  np_vers=emg_analyzer.emg.np.__version__,
-                                  py_vers='.'.join([str(i) for i in sys.version_info[0:3]])
-                                  )
-        self.assertEqual(emg_group_tracks.get_version_message(), expected_msg)
-
 
     def test_main_version(self):
         import sys
