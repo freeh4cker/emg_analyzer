@@ -6,7 +6,6 @@
 
 
 import tempfile
-import shutil
 import os
 import sys
 
