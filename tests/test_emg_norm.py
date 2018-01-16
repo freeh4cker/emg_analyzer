@@ -18,7 +18,7 @@ except ImportError as err:
 from emg_analyzer.scripts import emg_norm
 
 
-class TestEmgData(EmgTest):
+class Test_emg_norm(EmgTest):
 
     def test_get_version_message(self):
         import emg_analyzer
