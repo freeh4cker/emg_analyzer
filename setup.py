@@ -34,6 +34,7 @@ setup(
     entry_points={
         'console_scripts': [
            'emg_norm=emg_analyzer.scripts.emg_norm:main',
+           'emg_group_tracks=emg_analyzer.scripts.emg_group_tracks:main',
         ]
     }
 
