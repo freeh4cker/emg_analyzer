@@ -112,6 +112,7 @@ class Emg:
             emg_2_group = {emg.name: emg.data for emg in merge[new_emg_name]}
             new_emg.data = EmgData.group_track(new_emg_name, emg_2_group)
             new_emg.header.tracks_names = new_emg.data.tracks
+            new_emg.header.frames = new_emg.data.frames
             merged_emg.append(new_emg)
         return merged_emg
 
