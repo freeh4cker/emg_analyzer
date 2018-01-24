@@ -27,7 +27,8 @@ def main(args=None):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('emg_path',
-                        nargs='+',
+                        nargs='*',
+                        default=sys.stdin,
                         help="The path to '.emt' file or a directory containing '.emt' files.")
     parser.add_argument('--by-track',
                         action='store_true',
@@ -47,24 +48,41 @@ def main(args=None):
     emg_analyzer.logger_set_level(args.verbosity)
     _log = colorlog.getLogger('emg_analyzer')
 
+    if not isinstance(args.emg_path, list):
+        # args must be read from stdin
+        if sys.stdin.isatty():
+            # stdin is empty
+            msg = ''
+            _log.error(msg)
+            args.print_help()
+            sys.exit(msg)
+        else:
+            args.emg_path = [p.strip() for p in args.emg_path.readlines()]
+
+    if not args.emg_path:
+        args.print_help()
+        sys.exit(1)
+
     norm_method = 'norm_by_track' if args.by_track else 'norm'
     _log.debug("morm_method = '{}'".format(norm_method))
 
     for path in args.emg_path:
+        path = path.strip()
         if os.path.isdir(path):
-            process_dir(path,
-                        norm_method,
-                        method_args=tuple(),
-                        method_kwargs={},
-                        suffix='norm'
-                        )
+            processed = process_dir(path,
+                                    norm_method,
+                                    method_args=tuple(),
+                                    method_kwargs={},
+                                    suffix='norm'
+                                    )
         else:
-            process_one_emt_file(path,
-                                 norm_method,
-                                 method_args=tuple(),
-                                 method_kwargs={},
-                                 suffix='norm'
-                                 )
+            processed = process_one_emt_file(path,
+                                             norm_method,
+                                             method_args=tuple(),
+                                             method_kwargs={},
+                                             suffix='norm'
+                                             )
+        print(processed)
 
 
 if __name__ == '__main__':
