@@ -57,25 +57,26 @@ Using:
         emt_path_ori = self.get_data('two_tracks.emt')
         emt_path_exp = self.get_data('two_tracks_norm_by_track.emt')
         cwd = os.getcwd()
-        with tempfile.TemporaryDirectory() as tmp_dir_name:
-            os.chdir(tmp_dir_name)
+        with self.catch_output(out=True):
+            with tempfile.TemporaryDirectory() as tmp_dir_name:
+                os.chdir(tmp_dir_name)
 
-            emt_path = shutil.copy(emt_path_ori, tmp_dir_name)
-            root_dir, basename = os.path.split(emt_path)
-            normed_filename, ext = os.path.splitext(basename)
-            normed_filename = normed_filename.replace(' ', '_')
-            normed_filename = "{}_norm{}".format(normed_filename, ext)
+                emt_path = shutil.copy(emt_path_ori, tmp_dir_name)
+                root_dir, basename = os.path.split(emt_path)
+                normed_filename, ext = os.path.splitext(basename)
+                normed_filename = normed_filename.replace(' ', '_')
+                normed_filename = "{}_norm{}".format(normed_filename, ext)
 
-            emg_norm.main(args=[emt_path, '--by-track'])
-            self.assertTrue(self.compare_2_files(normed_filename, emt_path_exp))
-            os.chdir(cwd)
+                emg_norm.main(args=[emt_path, '--by-track'])
+                self.assertTrue(self.compare_2_files(normed_filename, emt_path_exp))
+                os.chdir(cwd)
 
 
     def test_main_one_dir(self):
         emt_path_ori = self.get_data('two_tracks.emt')
         emt_path_exp = self.get_data('two_tracks_norm_by_track.emt')
         cwd = os.getcwd()
-        with self.catch_output(err=True):
+        with self.catch_output(out=True, err=True):
             with tempfile.TemporaryDirectory() as tmp_dir_name:
                 os.chdir(tmp_dir_name)
 

@@ -23,11 +23,42 @@ def main(args=None):
     :return:
     """
     args = sys.argv[1:] if args is None else args
+    desc = """
+emg_group_tracks take several emt files as input and groups tracks base on their names.
+Creates one .emt file by tracks. for instance:
 
-    parser = argparse.ArgumentParser()
+inputs:
+-------
+exp1.emt
+    track_A track_B track_C track_D
+
+exp2.emt
+    track_B track_A track_D track_D
+
+exp3.emt
+    track_D track_C track_D track_C
+
+outputs:
+--------
+track_A.emt
+    exp1 exp2 exp3
+
+track_B.emt
+    exp1 exp2 exp3
+
+track_C.emt
+    exp1 exp2 exp3
+
+track_D.emt
+    exp1 exp2 exp3
+
+"""
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     description=desc)
     parser.add_argument('emg_path',
-                        nargs='+',
-                        help="The path to '.emt' file or a directory containing '.emt' files.")
+                        nargs='*',
+                        default=sys.stdin,
+                        help="The path to '.emt' files to group by tracks.")
     parser.add_argument('--out-dir',
                         help='directory where to write results, if directory does not exists, it will be created')
     parser.add_argument('--version',
@@ -66,6 +97,7 @@ def main(args=None):
     for path in args.emg_path:
         emg = emg_analyzer.emg.Emg()
         with open(path) as f:
+            _log.info("Parsing {}".format(path))
             emg.parse(f)
         input_emg.append(emg)
 
@@ -73,12 +105,19 @@ def main(args=None):
 
     for emg in new_emg:
         emg_path = os.path.join(args.out_dir, emg.name + '.emt')
+        results = []
         if os.path.exists(emg_path):
             msg = 'file already exists: {}'.format(emg_path)
             _log.error(msg)
             raise IOError(msg)
         with open(emg_path, 'w') as f:
+            _log.info("Writing {}".format(emg_path))
             emg.to_emt(f)
+            results.append(emg_path)
+    if args.out_dir:
+        print(args.out_dir)
+    else:
+        print(' '.join(results))
 
 
 if __name__ == '__main__':

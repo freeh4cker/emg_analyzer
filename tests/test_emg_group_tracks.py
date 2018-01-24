@@ -54,11 +54,12 @@ Using:
 
     def test_out_dir(self):
         input_emg = [self.get_data('exp{}.emt'.format(i)) for i in (1, 2, 3, 4)]
-        with tempfile.TemporaryDirectory() as tmp_dir_name:
-            out_dir = os.path.join(tmp_dir_name, 'foo')
-            emg_group_tracks.main(args=['--out-dir', out_dir, *input_emg])
-            self.assertTrue(os.path.exists(out_dir))
-            self.assertTrue(os.path.isdir(out_dir))
+        with self.catch_output(out=True):
+            with tempfile.TemporaryDirectory() as tmp_dir_name:
+                out_dir = os.path.join(tmp_dir_name, 'foo')
+                emg_group_tracks.main(args=['--out-dir', out_dir, *input_emg])
+                self.assertTrue(os.path.exists(out_dir))
+                self.assertTrue(os.path.isdir(out_dir))
 
         with tempfile.TemporaryDirectory() as tmp_dir_name:
             out_dir = os.path.join(tmp_dir_name, 'foo')
@@ -81,27 +82,29 @@ Using:
 
         cwd = os.getcwd()
         exp_emg = {i: self.get_data('{}.emt'.format(i)) for i in ('A', 'B', 'C')}
-        with tempfile.TemporaryDirectory() as tmp_dir_name:
-            os.chdir(tmp_dir_name)
-            emg_group_tracks.main(args=[ *input_emg])
-            for f in exp_emg:
-                self.assertTrue(self.compare_2_files(exp_emg[f],
-                                                     os.path.join(tmp_dir_name, f + '.emt')
-                                                     )
-                                )
+        with self.catch_output(out=True):
+            with tempfile.TemporaryDirectory() as tmp_dir_name:
+                os.chdir(tmp_dir_name)
+                emg_group_tracks.main(args=[ *input_emg])
+                for f in exp_emg:
+                    self.assertTrue(self.compare_2_files(exp_emg[f],
+                                                         os.path.join(tmp_dir_name, f + '.emt')
+                                                         )
+                                    )
         os.chdir(cwd)
 
 
     def test_main(self):
         input_emg = [self.get_data('exp{}.emt'.format(i)) for i in (1, 2, 3, 4)]
         exp_emg = {i: self.get_data('{}.emt'.format(i)) for i in ('A', 'B', 'C')}
-        with tempfile.TemporaryDirectory() as tmp_dir_name:
-            emg_group_tracks.main(args=['--out-dir', tmp_dir_name, *input_emg])
-            for f in exp_emg:
-                self.assertTrue(self.compare_2_files(exp_emg[f],
-                                                     os.path.join(tmp_dir_name, f + '.emt')
-                                                     )
-                                )
+        with self.catch_output(out=True):
+            with tempfile.TemporaryDirectory() as tmp_dir_name:
+                emg_group_tracks.main(args=['--out-dir', tmp_dir_name, *input_emg])
+                for f in exp_emg:
+                    self.assertTrue(self.compare_2_files(exp_emg[f],
+                                                         os.path.join(tmp_dir_name, f + '.emt')
+                                                         )
+                                    )
 
         with tempfile.TemporaryDirectory() as tmp_dir_name:
             file = os.path.join(tmp_dir_name, 'A.emt')
