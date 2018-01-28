@@ -1,13 +1,18 @@
 from setuptools import setup, find_packages
 
 try:
-    import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-except(IOError, ImportError):
-    long_description = open('README.md').read()
+    from pypandoc import convert
+    def read_md(f):
+        return convert(f, 'rst')
+except ImportError:
+    import sys
+    print("warning: pypandoc module not found, "
+          "could not convert Markdown to RST", file=sys.stderr)
+
+    def read_md(f): return open(f, 'r').read()
 
 
-version = '0.1bRC1'
+version = '0.1.rc3'
 setup(
     name='emg_analyzer',
     version=version,
@@ -15,14 +20,15 @@ setup(
     maintainer_email='freeh4cker@gmail.com',
     author='Bertrand Neron',
     author_email='freeh4cker@gmail.com',
-    long_description=long_description,
+    long_description=read_md('README.md'),
     keywords=['EMG', 'data science', 'data normalization'],
     description='parse emg recording and normalize the voltage',
     license='BSD3',
     platforms=['Unix', 'Linux', 'MacOsX'],
     classifiers=[
         'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers :: Science/Research',
+        'Intended Audience :: Developers ',
+        'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
