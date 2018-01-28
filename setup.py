@@ -35,6 +35,7 @@ setup(
         'console_scripts': [
            'emg_norm=emg_analyzer.scripts.emg_norm:main',
            'emg_group_tracks=emg_analyzer.scripts.emg_group_tracks:main',
+           'emg_plot=emg_analyzer.scripts.emg_plot:main',
         ]
     }
 

@@ -11,6 +11,9 @@ import os
 from io import StringIO
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import colorlog
+_log = colorlog.getLogger('emg_analyzer')
 
 
 class Emg:
@@ -52,7 +55,7 @@ class Emg:
         if self.header.frames != self.data.frames:
             raise RuntimeError("The number of Frames in header '{}' "
                                "does not match data frames '{}'.".format(self.header.frames,
-                                                                       self.data.frames))
+                                                                         self.data.frames))
 
 
     def norm_by_track(self):
@@ -117,7 +120,6 @@ class Emg:
         return merged_emg
 
 
-
     def to_emt(self, file=None):
         """
         Write the emg in .emt file format
@@ -136,8 +138,39 @@ class Emg:
         return buffer
 
 
-    def to_plot(self):
-        pass
+    def to_plot(self, out_dir=None):
+        """
+        
+        :param out_dir:
+        :return:
+        """
+        figs_path = []
+        ymin = self.data.min
+        ymax = self.data.max
+        for track in self.data.tracks:
+            fig_name = "{}_{}.{}".format(self.name, track, 'png')
+            _log.info("Compute figure: " + fig_name)
+            with plt.style.context('dark_background'):
+                fig, ax = plt.subplots()
+                width, heigth = fig.get_size_inches()
+                fig.set_size_inches([width * 2, heigth])
+                x = self.data['Time']
+                y = self.data[track]
+                ax.plot(x, y,
+                        color='red',
+                        linewidth=1,
+                        label=self.name)
+                ax.set(xlabel='time (s)',
+                       ylabel='voltage ({})'.format(self.header.unit),
+                       title=track)
+                ax.set_ylim([ymin, ymax])
+                ax.grid(color='darkgrey', linestyle='--', linewidth=1)
+                plt.legend()
+                fig_path = os.path.join(out_dir, fig_name)
+                fig.savefig(fig_path)
+                figs_path.append(fig_path)
+            del fig
+        return figs_path
 
 
 class EmgHeader:
@@ -220,12 +253,12 @@ Start time:   \t{start_time:.3f}
                 continue
         assert all([v is not None for v in self.__dict__.values()]), \
             "ERROR during parsing '{}': {}".format(emt_file.name,
-                                                    ', '.join([k for k, v in self.__dict__.items() if v is None]))
-        assert len(self.tracks_names) == self.tracks_nb, \
-            "ERROR during parsing '{}': tracks number '{}' does not match tracks: {}.".format(emt_file.name,
-                                                                                              self.tracks_nb,
-                                                                                              ", ".join(self.tracks_names))
-
+                                                   ', '.join([k for k, v in self.__dict__.items() if v is None]))
+        assert len(self.tracks_names) == self.tracks_nb,\
+            "ERROR during parsing '{}': tracks number '{}'" \
+            " does not match tracks: {}.".format(emt_file.name,
+                                                 self.tracks_nb,
+                                                 ", ".join(self.tracks_names))
 
 
     def to_tsv(self, file=None):
@@ -305,6 +338,18 @@ class EmgData:
         return len(self.data)
 
 
+    @property
+    def max(self):
+        time, data = self._split_data()
+        return data.max().max()
+
+
+    @property
+    def min(self):
+        time, data = self._split_data()
+        return data.min().min()
+
+
     def _split_data(self):
         """
         :return: split data in 2 DataFrame
@@ -314,6 +359,7 @@ class EmgData:
         time = self.data.iloc[:, 0:1]
         data = self.data.iloc[:, 1:]
         return time, data
+
 
     @staticmethod
     def _new_data(data):
@@ -326,6 +372,10 @@ class EmgData:
         new_data = EmgData()
         new_data.data = data
         return new_data
+
+
+    def __getitem__(self, track_name):
+        return self.data[track_name]
 
 
     def norm_by_track(self, tracks_names):
@@ -364,8 +414,6 @@ class EmgData:
 
         where x=(x1,...,xn) and zi is now your matrix with normalized data.
 
-        :param tracks_names: The name of the tracks to normalize.
-        :type tracks_names: list of string. each string must match to a data column.
         :return: a new EmgData
         :rtype: :class:`EmgData` object
         """
