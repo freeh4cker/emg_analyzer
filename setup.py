@@ -6,13 +6,11 @@ try:
         return convert(f, 'rst')
 except ImportError:
     import sys
-    print("warning: pypandoc module not found, "
-          "could not convert Markdown to RST", file=sys.stderr)
-
+    print("WARNING: pypandoc module not found.\nCould not convert Markdown to RST", file=sys.stderr)
     def read_md(f): return open(f, 'r').read()
 
 
-version = '0.1.rc3'
+version = '0.1'
 setup(
     name='emg_analyzer',
     version=version,
@@ -21,6 +19,7 @@ setup(
     author='Bertrand Neron',
     author_email='freeh4cker@gmail.com',
     long_description=read_md('README.md'),
+    url='https://github.com/freeh4cker/emg_analyzer',
     keywords=['EMG', 'data science', 'data normalization'],
     description='parse emg recording and normalize the voltage',
     license='BSD3',
