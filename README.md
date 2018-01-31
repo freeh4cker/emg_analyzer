@@ -1,6 +1,6 @@
 # EMG Analyzer
-[![Build Status](https://travis-ci.org/freeh4cker/emg_analyzer.svg?branch=master)](https://travis-ci.org/freeh4cker/emg_analyzer)
-[![Coverage Status](https://coveralls.io/repos/github/freeh4cker/emg_analyzer/badge.svg?branch=master)](https://coveralls.io/github/freeh4cker/emg_analyzer?branch=master)
+[! [Build Status](https://travis-ci.org/freeh4cker/emg_analyzer.svg?branch=master)](https://travis-ci.org/freeh4cker/emg_analyzer)
+[! [Coverage Status](https://coveralls.io/repos/github/freeh4cker/emg_analyzer/badge.svg?branch=master)](https://coveralls.io/github/freeh4cker/emg_analyzer?branch=master)
 
 
 Is a tool set to help to analyze ElectroMyoGraphy recorded via smart analyzer.
@@ -36,11 +36,12 @@ pip install -e git+https://github.com/freeh4cker/emg_analyzer.git#egg=emg_analyz
 
 ## quick start
 
-:construction: 
+:construction:
 
 ### emg_norm
 
 To normalize tracks in emt file. There is to way to normalize tracks.
+
 * all tracks are considered together to normalize (default)
 * normalize tracks by tracks
    
@@ -59,34 +60,35 @@ Creates one .emt file by tracks. for instance:
 emg_group_tracks exp{1,2,3}.emt 
 ```
 
-####with inputs
+#### with inputs
 
-<pre>
-exp1.emt
-    track_A track_B track_C track_D
 
-exp2.emt
-    track_B track_A track_D track_D
+    exp1.emt
+      track_A track_B track_C track_D
 
-exp3.emt
-    track_D track_C track_D track_C
-</pre>
+    exp2.emt
+      track_B track_A track_D track_D
 
-####create outputs
+    exp3.emt
+      track_D track_C track_D track_C
 
-<pre>
-track_A.emt
-    exp1 exp2 exp3
 
-track_B.emt
-    exp1 exp2 exp3
+#### create outputs
 
-track_C.emt
-    exp1 exp2 exp3
 
-track_D.emt
-    exp1 exp2 exp3
-</pre>
+    track_A.emt
+        exp1 exp2 exp3
+
+    track_B.emt
+        exp1 exp2 exp3
+
+    track_C.emt
+        exp1 exp2 exp3
+
+    track_D.emt
+        exp1 exp2 exp3
+
+
 
 > **Note:**
 > you can pipe the 2 methods
@@ -101,4 +103,5 @@ track_D.emt
 ## Contributing 
 
 We encourage contributions, bug report, enhancement ... 
+
 But before to do that we encourage to read [the contributing guide](CONTRIBUTING.md).
