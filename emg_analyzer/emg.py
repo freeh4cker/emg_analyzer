@@ -140,7 +140,7 @@ class Emg:
 
     def to_plot(self, out_dir=None):
         """
-        
+
         :param out_dir:
         :return:
         """
