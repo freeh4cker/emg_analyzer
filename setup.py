@@ -35,6 +35,7 @@ setup(
         'Environment :: Console',
         'Topic :: Scientific/Engineering :: Information Analysis',
     ],
+    test_suite='tests.run_tests.discover',
     zip_safe=False,
     packages=find_packages(),
     python_requires=">=3.6",

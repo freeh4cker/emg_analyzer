@@ -12,9 +12,13 @@ import sys
 import os
 
 
-def _run(test_files, test_root_path, verbosity=0):
+def discover(test_files=None, test_root_path=None):
+    if not test_root_path:
+        test_root_path = os.path.dirname(__file__)
+
     if not test_files:
         suite = unittest.TestLoader().discover(test_root_path, pattern="test_*.py")
+
     else:
         test_files = [t for t in test_files if test_root_path in t]
         suite = unittest.TestSuite()
@@ -28,11 +32,11 @@ def _run(test_files, test_root_path, verbosity=0):
             else:
                 sys.stderr.write("{0} : no such file or directory\n".format(test_file))
 
-    test_runner = unittest.TextTestRunner(verbosity=verbosity).run(suite)
-    return test_runner
+    return suite
 
 
-def run_unittests(test_files, verbosity=0):
+
+def run_tests(test_files, verbosity=0):
     """
     Execute Unit Tests
 
@@ -45,12 +49,15 @@ def run_unittests(test_files, verbosity=0):
     :return: True if the test passed successfully, False otherwise.
     :rtype: bool
     """
-    test_root_path = os.path.dirname(__file__)
-    return _run(test_files, test_root_path, verbosity)
+    test_root_path = os.path.abspath(os.path.dirname(__file__))
+    suite = discover(test_files, test_root_path)
+    test_runner = unittest.TextTestRunner(verbosity=verbosity).run(suite)
+    return test_runner
 
 
-if __name__ == '__main__':
-
+def main(args=None):
+    if args is None:
+        args = sys.argv[1:]
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("tests",
@@ -65,11 +72,11 @@ if __name__ == '__main__':
                         default=0
                         )
 
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     result_all_tests = []
 
-    EMG_HOME = os.path.abspath(os.path.join('..'))
+    EMG_HOME = os.path.abspath(os.path.join(__file__, '..', '..'))
 
     print("\n", "#" * 70, sep='')
     print("Test Runner: Unit tests")
@@ -78,11 +85,18 @@ if __name__ == '__main__':
     old_path = sys.path
 
     if EMG_HOME not in sys.path:
+        # need to add
         sys.path.insert(0, EMG_HOME)
-    test_runner = run_unittests(args.tests, verbosity=args.verbosity)
+    test_runner = run_tests(args.tests, verbosity=args.verbosity)
     unit_results = test_runner.wasSuccessful()
     sys.path = old_path
+    return unit_results
 
+
+
+if __name__ == '__main__':
+
+    unit_results = main(sys.argv[1:])
     if unit_results:
         sys.exit(0)
     else:
