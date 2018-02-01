@@ -22,7 +22,8 @@ class EmgTest(unittest.TestCase):
         return data_path
 
     def compare_2_files(self, f1, f2):
-        return open(f1).read() == open(f2).read()
+        with open(f1) as fh1, open(f2) as fh2:
+            return fh1.read() == fh2.read()
 
     @contextmanager
     def catch_output(self, out=False, err=False):

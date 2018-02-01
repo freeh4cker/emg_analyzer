@@ -74,7 +74,8 @@ class TestEmg(EmgTest):
         emt_file = StringIO()
         emg.to_emt(file=emt_file)
         generated_emt = emt_file.getvalue()
-        ori_emt = open(emt_path).read()
+        with open(emt_path) as ref_file:
+            ori_emt = ref_file.read()
         self.assertEqual(generated_emt, ori_emt)
 
         emg_received = emg.to_emt()
