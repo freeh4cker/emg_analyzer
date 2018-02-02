@@ -57,6 +57,7 @@ class TestEmgData(EmgTest):
             data_received.parse(data_file, tracks)
         self.assertListEqual(tracks, data_received.tracks)
 
+
     def test_frames(self):
         data = EmgData()
         data.data = pd.DataFrame([[0, 0, 1],
@@ -65,6 +66,83 @@ class TestEmgData(EmgTest):
                                  columns=['Frame', 'Time', 'A'])
         data.data = data.data.set_index(['Frame'])
         self.assertEqual(data.frames, 3)
+
+
+    def test_max(self):
+        data = EmgData()
+        data.data = pd.DataFrame([[0, 0, 1],
+                                 [1, 1, 2],
+                                 [2, 2, 3]],
+                                 columns=['Frame', 'Time', 'A'])
+        data.data = data.data.set_index(['Frame'])
+        self.assertEqual(data.max, 3)
+
+
+    def test_min(self):
+        data = EmgData()
+        data.data = pd.DataFrame([[0, 0, 1],
+                                 [1, 1, 2],
+                                 [2, 2, 3]],
+                                 columns=['Frame', 'Time', 'A'])
+        data.data = data.data.set_index(['Frame'])
+        self.assertEqual(data.min, 1)
+
+
+    def test_split_data(self):
+        data = EmgData()
+        data.data = pd.DataFrame([[0, 0, 1],
+                                 [1, 1, 2],
+                                 [2, 2, 3]],
+                                 columns=['Frame', 'Time', 'A'])
+        data.data = data.data.set_index(['Frame'])
+        time, data = data._split_data()
+
+        expected_time = pd.DataFrame([[0, 0],
+                                      [1, 1],
+                                      [2, 2]],
+                                      columns=['Frame', 'Time'])
+        expected_time = expected_time.set_index(['Frame'])
+        pd.util.testing.assert_frame_equal(time, expected_time)
+
+        expected_data = pd.DataFrame([[0, 1],
+                                      [1, 2],
+                                      [2, 3]],
+                                     columns=['Frame', 'A'])
+        expected_data = expected_data.set_index(['Frame'])
+        pd.util.testing.assert_frame_equal(data, expected_data)
+
+
+    def test_new_data(self):
+        df = pd.DataFrame([[0, 0, 1],
+                           [1, 1, 2],
+                           [2, 2, 3]],
+                           columns=['Frame', 'Time', 'A'])
+        df = df.set_index(['Frame'])
+        data = EmgData._new_data(df)
+
+        expected_data = EmgData()
+        expected_data.data = pd.DataFrame([[0, 0, 1],
+                                           [1, 1, 2],
+                                           [2, 2, 3]],
+                                          columns=['Frame', 'Time', 'A'])
+        expected_data.data = expected_data.data.set_index(['Frame'])
+        self.assertEqual(data, expected_data)
+
+
+    def test_getitem(self):
+        data = EmgData()
+        data.data = pd.DataFrame([[0, 0, 1],
+                                 [1, 1, 2],
+                                 [2, 2, 3]],
+                                 columns=['Frame', 'Time', 'A'])
+        data.data = data.data.set_index(['Frame'])
+
+        expected_data = pd.Series(data=[1, 2, 3],
+                                  index=[0, 1, 2],
+                                  name='A')
+        expected_data.index.name = 'Frame'
+        pd.util.testing.assert_series_equal(data['A'], expected_data)
+
 
     def test_eq(self):
         data_1 = EmgData()
