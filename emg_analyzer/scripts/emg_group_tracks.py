@@ -104,7 +104,9 @@ track_D.emt
     new_emg = input_emg[0].group_by_track(input_emg[1:])
 
     for emg in new_emg:
-        emg_path = os.path.join(args.out_dir, emg.name + '.emt')
+        trantab = str.maketrans('/ :', '___')
+        emg_name = emg.name.translate(trantab)
+        emg_path = os.path.join(args.out_dir, emg_name + '.emt')
         results = []
         if os.path.exists(emg_path):
             msg = 'file already exists: {}'.format(emg_path)
