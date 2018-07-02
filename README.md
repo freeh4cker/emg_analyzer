@@ -10,13 +10,12 @@ The second script allow to generate new emt grouped by tracks.
 
 ## Installation
 
-*emg_analyzer* is not yet registered on PyPI so you need to install it from github.
 It need at least python 3.6.
 
 ### For users
 
 ```
-python3.6 -m pip install --user git+https://github.com/freeh4cker/emg_analyzer.git#egg=emg_analyzer
+python3.6 -m pip install --user emg_analyzer.git
 ```
 
 ### For developers
@@ -33,6 +32,14 @@ Then install the project in editable mode
 ```
 pip install -e git+https://github.com/freeh4cker/emg_analyzer.git#egg=emg_analyzer
 ``` 
+or
+
+```
+git clone https://github.com/freeh4cker/emg_analyzer.git
+cd emg_analyzer
+pip install -r requirements.txt
+python setup.py develop
+```
 
 ## quick start
 
