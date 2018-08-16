@@ -25,7 +25,9 @@ def main(args=None):
     """
     args = sys.argv[1:] if args is None else args
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="""Perform basic statistics on an .emt file.
+min, max, count, average, standard deviation, ... for each muscles.
+By default write results in file (one by inputfile) with same name as input with extension '.desc'""")
     parser.add_argument('emg_path',
                         nargs='*',
                         default=sys.stdin,
