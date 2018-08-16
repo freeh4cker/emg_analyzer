@@ -57,6 +57,7 @@ def process_one_emt_file(emt_path, method_name, method_args, method_kwargs, dest
     processed_path = os.path.join(dest, processed_filename)
 
     with open(processed_path, 'w') as processed_file:
+        _log.debug('write ' + processed_path)
         processed_emg.to_emt(file=processed_file)
     return processed_path
 

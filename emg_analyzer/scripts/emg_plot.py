@@ -38,6 +38,12 @@ def main(args=None):
                         action=argparse_utils.VersionAction,
                         version=get_version_message(),
                         help='Display version and exit.')
+    parser.add_argument('--y-scale-auto',
+                        action='store_true',
+                        default=False,
+                        help='do not use the y min max of the matrix to fix scale of each'
+                             'columns. let system to use the best scale.'
+                        )
     parser.add_argument('-v', '--verbosity',
                         action='count',
                         default=0,
@@ -71,7 +77,7 @@ def main(args=None):
         with open(path) as f:
             _log.info("Parsing {}".format(path))
             emg.parse(f)
-        paths = emg.to_plot(out_dir=args.out_dir)
+        paths = emg.to_plot(out_dir=args.out_dir, y_scale_auto=args.y_scale_auto)
         results.extend(paths)
         
     if args.out_dir:

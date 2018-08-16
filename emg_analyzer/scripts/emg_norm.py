@@ -11,6 +11,9 @@ import argparse
 import os
 import sys
 import colorlog
+
+import pandas as pd
+
 import emg_analyzer
 from emg_analyzer import argparse_utils
 from emg_analyzer.utils import process_dir, process_one_emt_file, get_version_message
@@ -34,6 +37,16 @@ def main(args=None):
                         action='store_true',
                         default=False,
                         help='normalize track by track instead of all tracks together')
+    parser.add_argument('--min',
+                        type=float,
+                        help='the min value to use for the normalization '
+                             '(default use the min value of the matrix or column)')
+    parser.add_argument('--max',
+                        type=float,
+                        help='the max value to use for the normalization '
+                             '(default use the max value of the matrix or column)')
+    parser.add_argument('--dyn-cal',
+                        help='The path to the file to use for the dynamic calibration.')
     parser.add_argument('--version',
                         action=argparse_utils.VersionAction,
                         version=get_version_message(),
@@ -63,8 +76,20 @@ def main(args=None):
         args.print_help()
         sys.exit(1)
 
-    norm_method = 'norm_by_track' if args.by_track else 'norm'
+    norm_method = 'norm_by_track' if args.by_track or args.dyn_cal else 'norm'
+
     _log.debug("morm_method = '{}'".format(norm_method))
+    options = {}
+    if args.min is not None:
+        options['min'] = args.min
+    if args.max is not None:
+        options['max'] = args.max
+    if args.dyn_cal:
+        _log.info("Loading dynamic calibration file '{}'".format(args.dyn_cal))
+        dyn_cal = pd.read_table(args.dyn_cal, comment='#', index_col=0)
+        dyn_cal = dyn_cal.T[['min', 'max']].T
+        print(dyn_cal)
+        options['dyn_cal'] = dyn_cal
 
     for path in args.emg_path:
         path = path.strip()
@@ -72,14 +97,14 @@ def main(args=None):
             processed = process_dir(path,
                                     norm_method,
                                     method_args=tuple(),
-                                    method_kwargs={},
+                                    method_kwargs=options,
                                     suffix='norm'
                                     )
         else:
             processed = process_one_emt_file(path,
                                              norm_method,
                                              method_args=tuple(),
-                                             method_kwargs={},
+                                             method_kwargs=options,
                                              suffix='norm'
                                              )
         print(processed)

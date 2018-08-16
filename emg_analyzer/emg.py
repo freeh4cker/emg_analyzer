@@ -40,6 +40,7 @@ class Emg:
         return self.header == other.header and self.data == other.data
 
 
+
     def parse(self, emt_file):
         """
         Parse emt_file to fill this object.
@@ -58,7 +59,7 @@ class Emg:
                                                                          self.data.frames))
 
 
-    def norm_by_track(self):
+    def norm_by_track(self, dyn_cal=None):
         """
         Normalize each Voltage records.
         Each record is normalize independently following the formula below.
@@ -71,7 +72,7 @@ class Emg:
         """
         new_emg = Emg()
         new_header = self.header.copy()
-        new_data = self.data.norm_by_track(self.header.tracks_names)
+        new_data = self.data.norm_by_track(self.header.tracks_names, dyn_cal=dyn_cal)
         new_emg.header = new_header
         new_emg.data = new_data
         return new_emg
@@ -120,6 +121,25 @@ class Emg:
         return merged_emg
 
 
+    def describe(self):
+        """
+
+        :return:
+        """
+        return self.data.describe()
+
+
+    def select(self, rest_matrix, coef=1.5):
+        new_emg = Emg()
+        new_header = self.header.copy()
+        new_data, thresholds = self.data.select(rest_matrix, coef=coef)
+        new_header.frames = new_data.frames
+        new_header.start_time = self.data.start_time
+        new_emg.header = new_header
+        new_emg.data = new_data
+        return new_emg, thresholds
+
+
     def to_emt(self, file=None):
         """
         Write the emg in .emt file format
@@ -138,7 +158,7 @@ class Emg:
         return buffer
 
 
-    def to_plot(self, out_dir=None):
+    def to_plot(self, out_dir=None, y_scale_auto=False):
         """
 
         :param out_dir:
@@ -149,6 +169,8 @@ class Emg:
         ymax = self.data.max
         for track in self.data.tracks:
             fig_name = "{}_{}.{}".format(self.name, track, 'png')
+            transtab = str.maketrans('/ :', '___')
+            fig_name = fig_name.translate(transtab)
             _log.info("Compute figure: " + fig_name)
             with plt.style.context('dark_background'):
                 fig, ax = plt.subplots()
@@ -163,7 +185,9 @@ class Emg:
                 ax.set(xlabel='time (s)',
                        ylabel='voltage ({})'.format(self.header.unit),
                        title=track)
-                ax.set_ylim([ymin, ymax])
+                if not y_scale_auto:
+                    ax.set_ylim([ymin, ymax])
+
                 ax.grid(color='darkgrey', linestyle='--', linewidth=1)
                 plt.legend()
                 fig_path = os.path.join(out_dir, fig_name)
@@ -247,7 +271,9 @@ Start time:   \t{start_time:.3f}
             elif line.startswith(' Frame\t'):
                 columns = line.strip().split('\t')
                 columns = columns[2:]
-                self.tracks_names = [c.replace('Voltage:', '') for c in columns]
+                self.tracks_names = [c.split(':')[1].split('~')[0] for c in columns]
+                if self.tracks_names[0].startswith('Dev1/'):
+                    self.tracks_names = [c.replace('Dev1/', '') for c in self.tracks_names]
                 break
             else:
                 continue
@@ -274,6 +300,7 @@ Start time:   \t{start_time:.3f}
         buffer = file if file is not None else StringIO()
         fields = {k: v for k, v in self.__dict__.items()}
         fields['tracks_names'] = '\t'.join(['Voltage:{}'.format(m) for m in self.tracks_names])
+
         buffer.write(self._template.format(**fields))
         if file is None:
             buffer = buffer.getvalue()
@@ -325,8 +352,12 @@ class EmgData:
         :return: The list of the tracks in this EMG.
         :rtype: List of string
         """
-        return list(self.data.columns)[1:]
-
+        if self.data.columns[0].upper() == "TIME":
+            return list(self.data.columns)[1:]
+        else:
+            # this is probably the results of a concatanation
+            # time was removed because it has no sense
+            return list(self.data.columns)
 
     @property
     def frames(self):
@@ -349,6 +380,10 @@ class EmgData:
         time, data = self._split_data()
         return data.min().min()
 
+    @property
+    def start_time(self):
+        return self.data['Time'][0]
+
 
     def _split_data(self):
         """
@@ -356,10 +391,12 @@ class EmgData:
                  the first DataFrame contain time and the second one correspond to tracks.
         :rtype: tuple of 2 :class:`pd.DataFrame` object
         """
-        time = self.data.iloc[:, 0:1]
-        data = self.data.iloc[:, 1:]
-        return time, data
-
+        if self.data.columns[0].upper() == 'TIME':
+            time = self.data.iloc[:, 0:1]
+            data = self.data.iloc[:, 1:]
+            return time, data
+        else:
+            raise RuntimeError("The first column is not Time: abort splitting")
 
     @staticmethod
     def _new_data(data):
@@ -378,7 +415,7 @@ class EmgData:
         return self.data[track_name]
 
 
-    def norm_by_track(self, tracks_names):
+    def norm_by_track(self, tracks_names, dyn_cal=None):
         """
         Compute a new EmgData where each track is normalized
         independently following the formula below
@@ -390,22 +427,36 @@ class EmgData:
 
         :param tracks_names: The name of the tracks to normalize.
         :type tracks_names: list of string. each string must match to a data column.
+        :param dyn_cal: The min and max for each muscle to normalize
+                        The data Frame must have the following structure
+
+                        muscle1   muscle2 muscle3 ...
+                    min  0           1.1  ...
+                    max 10.1        12.3  ...
+
+        :type dyn_cal: :class:`pandas.DataFrame` object
         :return: a new EmgData
         :rtype: :class:`EmgData` object
         """
         time, data = self._split_data()
         for col in tracks_names:
             track = data[col]
-            v_min = track.min()
+            if dyn_cal is not None:
+                v_min = dyn_cal[col]['min']
+                v_max = dyn_cal[col]['max']
+            else:
+                v_min = track.min()
+                v_max = track.max()
+            _log.debug("vmin = " + str(v_min))
+            _log.debug("vmax = " + str(v_max))
             track -= v_min  # do it in place on data frame
-            v_max = track.max()
-            track /= v_max
+            track /= (v_max - v_min)
         data = data.round(decimals=3)
         data = pd.concat([time, data], axis=1)
         return self._new_data(data)
 
 
-    def norm(self):
+    def norm(self, v_min=None, v_max=None):
         """
         Compute a new EmgData where tracks are normalized following the formula below
         .. math::
@@ -414,18 +465,54 @@ class EmgData:
 
         where x=(x1,...,xn) and zi is now your matrix with normalized data.
 
+        :param float v_min: The min value to use to normalize, if None use the min of the matrix.
+        :param float v_max: The max value to use to normalize, if None use the max of the matrix.
         :return: a new EmgData
         :rtype: :class:`EmgData` object
         """
-
         time, data = self._split_data()
-        v_min = data.min().min()
+        if v_min is None:
+            v_min = data.min().min()
+        _log.debug("v_min = " + str(v_min))
         data -= v_min
-        v_max = data.max().max()
+        if v_max is None:
+            v_max = data.max().max()
+        _log.debug("v_max = " + str(v_max))
         data /= v_max
         data = data.round(decimals=3)
         data = pd.concat([time, data], axis=1)
         return self._new_data(data)
+
+
+    def describe(self):
+        """
+        :return: basic statistics which describe each columns except time.
+        :rtype: :class:`pandas.dataFrame` object
+        """
+        return self.data.iloc[:, 1:].describe()
+
+
+    def select(self, rest_matrix, coef=1.5):
+        """
+
+        :param float threshold:
+        :return:
+        """
+        # split cols
+        cols = self.data.columns
+        filtered_cols = []
+        thresholds = {}
+        for col in cols[1:]:
+            # The first col should be Time
+            c = self.data[col]
+            threshold = rest_matrix[col]['mean'] + (rest_matrix[col]['std'] * coef)
+            thresholds[col] = threshold
+            s = c[c > threshold]
+            filtered_cols.append(s)
+        new_cols = pd.concat(filtered_cols, axis=1)
+        sel_time = self.data['Time']
+        new_df = pd.concat([sel_time, new_cols], axis=1)
+        return self._new_data(new_df), thresholds
 
 
     def to_tsv(self, file=None, header=False):
@@ -447,7 +534,8 @@ class EmgData:
         self.data.to_csv(path_or_buf=buffer,
                          header=header,
                          sep='\t',
-                         float_format='%.3f')
+                         float_format='%.3f',
+                         na_rep='NaN')
         if file is None:
             buffer = buffer.getvalue()
         return buffer
@@ -490,3 +578,25 @@ class EmgData:
         series.insert(0, data)
         data = pd.concat(series, axis=1)
         return EmgData._new_data(data)
+
+
+def desc_summary(sel_summary, index_names=('Experiment', 'Muscle')):
+    """
+
+    :param str emg_sel: The path of selection to summarize
+    :param index_names:
+    :return:
+    """
+    summaries = []
+    for summary_path in sel_summary:
+        with open(summary_path) as sel_file:
+            header = next(sel_file)
+            if not header.startswith('# Summary of activities for condition:'):
+                raise RuntimeError("{} is not a selection summary file".format(summary_path))
+            mvt = os.path.splitext(os.path.basename(summary_path))[0]
+            mvt = mvt.replace('FiltradoRectificado_norm', '')
+            summary = pd.read_table(sel_file, comment='#', index_col=0)
+        mi = pd.MultiIndex.from_tuples([(mvt, muscle) for muscle in summary.index], names=index_names)
+        summary = summary.set_index(mi)
+        summaries.append(summary)
+    return pd.DataFrame(pd.concat(summaries))

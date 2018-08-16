@@ -104,8 +104,8 @@ track_D.emt
     new_emg = input_emg[0].group_by_track(input_emg[1:])
 
     for emg in new_emg:
-        trantab = str.maketrans('/ :', '___')
-        emg_name = emg.name.translate(trantab)
+        transtab = str.maketrans('/ :', '___')
+        emg_name = emg.name.translate(transtab)
         emg_path = os.path.join(args.out_dir, emg_name + '.emt')
         results = []
         if os.path.exists(emg_path):

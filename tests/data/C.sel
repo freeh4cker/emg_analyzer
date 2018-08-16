@@ -1,0 +1,12 @@
+# Activities selection
+# filter tests/data/C.emt emg with threshold = 500.2
+# /home/hiu-paus/Projects/emg_env/bin/emg_select --threshold 500.2 -v tests/data/C.emt
+Frame	Time	exp2	exp3
+4	0.004	NaN	500.300
+5	0.005	600.200	600.300
+6	0.006	700.200	700.300
+7	0.007	800.200	800.300
+8	0.008	900.200	900.300
+9	0.009	1000.200	1000.300
+count	NaN	5.000	6.000
+

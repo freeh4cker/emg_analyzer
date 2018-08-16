@@ -46,6 +46,11 @@ setup(
            'emg_norm=emg_analyzer.scripts.emg_norm:main',
            'emg_group_tracks=emg_analyzer.scripts.emg_group_tracks:main',
            'emg_plot=emg_analyzer.scripts.emg_plot:main',
+           'emg_describe=emg_analyzer.scripts.emg_describe:main',
+           'emg_select=emg_analyzer.scripts.emg_select:main',
+           'emg_summary=emg_analyzer.scripts.emg_summary:main',
+           'emg_dyn_cal=emg_analyzer.scripts.emg_dyn_cal:main',
+           'emg_activation=emg_analyzer.scripts.emg_activation:main'
         ]
     }
 
