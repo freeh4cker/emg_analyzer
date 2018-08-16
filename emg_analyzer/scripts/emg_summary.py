@@ -54,13 +54,13 @@ def main(args=None):
             # stdin is empty
             msg = ''
             _log.error(msg)
-            args.print_help()
+            parser.print_help()
             sys.exit(msg)
         else:
             args.sum_path = [p.strip() for p in args.sum_path.readlines()]
 
     if not args.sum_path:
-        args.print_help()
+        parser.print_help()
         sys.exit(1)
 
     sum_file_to_aggregate = []

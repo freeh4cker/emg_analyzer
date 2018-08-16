@@ -50,13 +50,13 @@ def main(args=None):
             # stdin is empty
             msg = ''
             _log.error(msg)
-            args.print_help()
+            parser.print_help()
             sys.exit(msg)
         else:
             args.emg_path = [p.strip() for p in args.emg_path.readlines()]
 
     if not args.emg_path:
-        args.print_help()
+        parser.print_help()
         sys.exit(1)
 
     emt_to_concat = []

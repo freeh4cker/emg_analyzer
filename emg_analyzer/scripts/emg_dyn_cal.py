@@ -48,7 +48,7 @@ def main(args=None):
     _log = colorlog.getLogger('emg_analyzer')
 
     if not os.path.isdir(args.dc_path):
-        raise RuntimeError("The argument must be a directory: {}".format(args.print_help()))
+        raise RuntimeError("The argument must be a directory: {}".format(parser.print_help()))
 
     dyn_cal = []
     emt_files = [p for p in os.listdir(args.dc_path) if os.path.isfile(os.path.join(args.dc_path, p))

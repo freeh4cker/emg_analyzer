@@ -67,13 +67,13 @@ def main(args=None):
             # stdin is empty
             msg = ''
             _log.error(msg)
-            args.print_help()
+            parser.print_help()
             sys.exit(msg)
         else:
             args.emg_path = [p.strip() for p in args.emg_path.readlines()]
 
     if not args.emg_path:
-        args.print_help()
+        parser.print_help()
         sys.exit(1)
 
     norm_method = 'norm_by_track' if args.by_track or args.dyn_cal else 'norm'
