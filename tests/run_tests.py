@@ -12,6 +12,7 @@ import sys
 import os
 
 
+
 def discover(test_files=None, test_root_path=None):
     if not test_root_path:
         test_root_path = os.path.dirname(__file__)
@@ -20,6 +21,7 @@ def discover(test_files=None, test_root_path=None):
         suite = unittest.TestLoader().discover(test_root_path, pattern="test_*.py")
 
     else:
+        test_files = [os.path.abspath(f) for f in test_files]
         test_files = [t for t in test_files if test_root_path in t]
         suite = unittest.TestSuite()
         for test_file in test_files:
