@@ -130,6 +130,12 @@ class Emg:
 
 
     def select(self, rest_matrix, coef=1.5):
+        """
+        select data greater that
+        :param rest_matrix:
+        :param coef:
+        :return:
+        """
         new_emg = Emg()
         new_header = self.header.copy()
         new_data, thresholds = self.data.select(rest_matrix, coef=coef)
@@ -412,7 +418,23 @@ class EmgData:
 
 
     def __getitem__(self, track_name):
+        """
+
+        :param str track_name:
+        :return: return all frames corresponding to the track track_name
+        :rtype: :class:`pandas.Serie` object
+        """
         return self.data[track_name]
+
+
+    def get_frames(self, start, stop):
+        """
+
+        :param int start:
+        :param int stop:
+        :return: the frames between start ans stop included
+        """
+        return self.data.loc[start:stop]
 
 
     def norm_by_track(self, tracks_names, dyn_cal=None):

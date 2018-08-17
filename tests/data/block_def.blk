@@ -1,0 +1,13 @@
+# fake block definition file
+# definition of blocks for the 1rst experiment
+File: exp1.emt
+1,0,2
+2,3,5
+3,6,8
+
+
+# definition of blocks for the 2nd experiment
+File: exp2.emt
+1,1,4
+2,4,7
+3,7,9
