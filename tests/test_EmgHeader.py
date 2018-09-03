@@ -29,7 +29,7 @@ class TestEmgHeader(EmgTest):
         self.assertEqual(header.freq, '1000 Hz')
         self.assertEqual(header.frames, 33780)
         self.assertEqual(header.start_time, 0.000)
-        self.assertListEqual(header.tracks_names, ['LDA~2'])
+        self.assertListEqual(header.tracks_names, ['LDA'])
 
         ##################################
         # header with frame not indented #
@@ -55,7 +55,7 @@ class TestEmgHeader(EmgTest):
         self.assertEqual(header.freq, '1000 Hz')
         self.assertEqual(header.frames, 20850)
         self.assertEqual(header.start_time, 0.000)
-        self.assertListEqual(header.tracks_names, ['RDA~2', 'RTRI~2', 'RDP~2', 'RBI~2', 'RFLCar~2'])
+        self.assertListEqual(header.tracks_names, ['RDA', 'RTRI', 'RDP', 'RBI', 'RFLCar'])
 
         ################################################
         # header with tracks nb not match tracks names #
@@ -67,7 +67,7 @@ class TestEmgHeader(EmgTest):
                 header.parse(emt_file)
         self.assertEqual(str(ctx.exception),
                          "ERROR during parsing '{}': tracks number '2' does not match tracks: "
-                         "RDA~2, RTRI~2, RDP~2, RBI~2, RFLCar~2.".format(emt_path))
+                         "RDA, RTRI, RDP, RBI, RFLCar.".format(emt_path))
 
     def test_eq(self):
         header_1 = EmgHeader()
