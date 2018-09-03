@@ -66,7 +66,7 @@ class TestBlockHandler(EmgTest):
         blk2 = block.Block(ref, nb2, start2, stop2)
         bh.add_block(blk2)
         ctrl = [blk1, blk2]
-        for b , c in zip(bh, ctrl):
+        for b, c in zip(bh, ctrl):
             self.assertEqual(b, c)
 
 
@@ -74,14 +74,15 @@ class TestParser(EmgTest):
 
     def test_parse_block_def(self):
         with open(self.get_data('block_def.blk')) as blk_f:
-            trials = block.parse_block_def(blk_f)
+            trials = block.parse_block_def(blk_f, ',')
+
         ref = self.get_data('exp1.emt')
         bh1 = block.BlockHandler(ref)
         bh1.add_block(block.Block(ref, 1, 0, 2))
         bh1.add_block(block.Block(ref, 2, 3, 5))
         bh1.add_block(block.Block(ref, 3, 6, 8))
 
-        ref = self.get_data('exp2.emt')
+        ref = self.get_data('exp5.emt')
         bh2 = block.BlockHandler(ref)
         bh2.add_block(block.Block(ref, 1, 1, 4))
         bh2.add_block(block.Block(ref, 2, 4, 7))
