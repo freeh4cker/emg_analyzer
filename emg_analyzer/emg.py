@@ -179,6 +179,7 @@ class Emg:
             fig_name = fig_name.translate(transtab)
             _log.info("Compute figure: " + fig_name)
             with plt.style.context('dark_background'):
+                plt.close('all')
                 fig, ax = plt.subplots()
                 width, heigth = fig.get_size_inches()
                 fig.set_size_inches([width * 2, heigth])
