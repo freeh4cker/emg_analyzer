@@ -50,7 +50,8 @@ setup(
            'emg_select=emg_analyzer.scripts.emg_select:main',
            'emg_summary=emg_analyzer.scripts.emg_summary:main',
            'emg_dyn_cal=emg_analyzer.scripts.emg_dyn_cal:main',
-           'emg_activation=emg_analyzer.scripts.emg_activation:main'
+           'emg_activation=emg_analyzer.scripts.emg_activation:main',
+           'emg_block=emg_analyzer.scripts.emg_block:main',
         ]
     }
 
