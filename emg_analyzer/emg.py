@@ -278,7 +278,7 @@ Start time:   \t{start_time:.3f}
             elif line.startswith(' Frame\t'):
                 columns = line.strip().split('\t')
                 columns = columns[2:]
-                self.tracks_names = [c.split(':')[1].split('~')[0] for c in columns]
+                self.tracks_names = [c.split(':')[1].split('~')[0].strip() for c in columns]
                 if self.tracks_names[0].startswith('Dev1/'):
                     self.tracks_names = [c.replace('Dev1/', '') for c in self.tracks_names]
                 break
