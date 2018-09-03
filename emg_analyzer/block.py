@@ -9,7 +9,7 @@ import colorlog
 
 _log = colorlog.getLogger('emg_analyzer.block')
 
-from emg_analyzer.emg import  Emg
+from emg_analyzer.emg import Emg
 
 
 class Block:
@@ -66,11 +66,11 @@ class BlockHandler:
         self.blocks.append(block)
 
     def __iter__(self):
-        for block in sorted(self.blocks, key=lambda blk: blk.nb):
-            yield block
+        generator = (block for block in sorted(self.blocks, key=lambda blk: blk.nb))
+        return generator
 
 
-def parse_block_def(block_file):
+def parse_block_def(block_file, sep):
     """
     parse a block defition file and return a list of :class:`BlockHandler` objects.
     :param block_file: The definition block file to parse
@@ -85,12 +85,12 @@ def parse_block_def(block_file):
             continue
         elif line.startswith('#'):
             continue
-        elif line.lower().startswith('file:'):
+        elif line.lower().startswith('file'):
             if current_block_handler:
-                #  start a new trial so add th current block handler to trials before to init a new one
+                #  start a new trial so add the current block handler to trials before to init a new one
                 block_handlers.append(current_block_handler)
-            ref = line.split(':')[1]
-            ref = ref.strip()
+            line = line.strip(sep)
+            ref = line.split(':')[1].strip()
             ref = os.path.normpath(os.path.join(os.path.dirname(block_file.name), ref))
             if not os.path.exists(ref):
                 msg = 'File not found: {}'.format(ref)
@@ -98,10 +98,15 @@ def parse_block_def(block_file):
                 raise IOError(msg)
             current_block_handler = BlockHandler(ref)
         else:
-            block_nb, start, stop = line.split(',')
-            block_nb = int(block_nb.strip())
-            start = int(start.strip())
-            stop = int(stop.strip())
+            try:
+                block_nb, start, stop, *_ = line.split(sep)
+                if not any([start, stop]):
+                    continue
+                block_nb = int(block_nb.strip())
+                start = int(start.strip())
+                stop = int(stop.strip())
+            except Exception as err:
+                raise RuntimeError("{}: {}".format(line, err))
             current_block_handler.add_block(Block(ref, block_nb, start, stop))
     # This is the end of the file so add the current block handler to the trials
     block_handlers.append(current_block_handler)
